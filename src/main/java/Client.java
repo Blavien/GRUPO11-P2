@@ -4,6 +4,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Scanner;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * This class represents the client. The client sends the messages to the server by means of a socket. The use of Object
@@ -17,7 +20,9 @@ public class Client {
     private final ObjectOutputStream out;
     private final boolean isConnected;
     private final String userDir;
-
+    private String client_name;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -26,7 +31,7 @@ public class Client {
      *
      * @throws IOException when an I/O error occurs when creating the socket
      */
-    public Client ( int port ) throws IOException {
+    public Client ( int port ) throws Exception {
         client = new Socket ( HOST , port );
         out = new ObjectOutputStream ( client.getOutputStream ( ) );
         in = new ObjectInputStream ( client.getInputStream ( ) );
@@ -36,6 +41,27 @@ public class Client {
         System.out.println ( "Temporary directory path " + userDir );
     }
 
+    public boolean isConnected() {
+        return isConnected;
+    }
+    public String getClientName() {
+        return client_name;
+    }
+    public void setClientName(String client_name){
+        this.client_name = client_name;
+    }
+    public void setPrivateKey() throws Exception{
+        this.privateKey = RSA.getPrivateKey(this.client_name);
+    }
+    public void setPublicKey() throws Exception{
+        this.publicKey = RSA.getPublicKey(this.client_name);
+    }
+    public PrivateKey getPrivateKey() throws Exception{
+        return this.privateKey;
+    }
+    public PublicKey getPublicKey() throws Exception{
+        return RSA.getPublicKey(this.client_name);
+    }
     /**
      * Executes the client. It reads the file from the console and sends it to the server. It waits for the response and
      * writes the file to the temporary directory.
@@ -43,6 +69,7 @@ public class Client {
     public void execute ( ) {
         Scanner usrInput = new Scanner ( System.in );
         try {
+
             while ( isConnected ) {
                 // Reads the message to extract the path of the file
                 System.out.println ( "Write the path of the file" );
@@ -91,7 +118,6 @@ public class Client {
         out.writeObject ( messageObj );
         out.flush ( );
     }
-
     /**
      * Closes the connection by closing the socket and the streams.
      */
