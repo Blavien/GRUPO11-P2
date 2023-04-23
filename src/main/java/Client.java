@@ -1,10 +1,10 @@
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Scanner;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -23,6 +23,8 @@ public class Client {
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
+    private SecretKey macKey;
+    private int requests;
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -32,6 +34,7 @@ public class Client {
      * @throws IOException when an I/O error occurs when creating the socket
      */
     public Client ( int port ) throws Exception {
+        this.requests = 0;
         client = new Socket ( HOST , port );
         out = new ObjectOutputStream ( client.getOutputStream ( ) );
         in = new ObjectInputStream ( client.getInputStream ( ) );
@@ -39,8 +42,17 @@ public class Client {
         // Create a temporary directory for putting the request files
         userDir = Files.createTempDirectory ( "fileServer" ).toFile ( ).getAbsolutePath ( );
         System.out.println ( "Temporary directory path " + userDir );
+
+        //Generate unique macKey for this client
+        macKey = MAC.createMACKey();
     }
 
+    public SecretKey getMacKey(){
+        return this.macKey;
+    }
+    public void setMacKey() throws Exception{
+        this.macKey = MAC.createMACKey();;
+    }
     public boolean isConnected() {
         return isConnected;
     }

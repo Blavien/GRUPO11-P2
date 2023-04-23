@@ -1,14 +1,24 @@
+import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
+import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 /**
  * This class implements the generation and verification of the message authentication code (MAC).
  */
-public class Integrity {
-
+public class MAC {
     private static final String MAC_ALGORITHM = "HmacSHA256";
 
+    public static SecretKey createMACKey () throws Exception{
+        SecretKey macKey;
+        KeyGenerator keyGen = KeyGenerator.getInstance(MAC_ALGORITHM);
+        SecureRandom random = new SecureRandom();
+        keyGen.init(random);
+        macKey = keyGen.generateKey();
+        return macKey;
+    }
     /**
      * Generates the message authentication code (MAC) of the message.
      *
@@ -16,11 +26,10 @@ public class Integrity {
      *
      * @throws Exception when the MAC generation fails
      */
-    public static byte[] generateMAC ( byte[] message , String macKey ) throws Exception {
-        SecretKeySpec secretKeySpec = new SecretKeySpec ( macKey.getBytes ( ) , MAC_ALGORITHM );
-        Mac mac = Mac.getInstance ( MAC_ALGORITHM );
-        mac.init ( secretKeySpec );
-        return mac.doFinal ( message );
+    public static byte[] generateMAC (byte[] message, Key key) throws Exception {
+        Mac mac = Mac.getInstance(MAC_ALGORITHM);
+        mac.init(key);
+        return mac.doFinal(message);
     }
 
     /**

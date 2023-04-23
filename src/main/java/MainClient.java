@@ -13,10 +13,12 @@ public class MainClient {
                 Client client = new Client ( 8000 );
 
                 client.setClientName("Sara");
-
-                RSA.storeRSAKeys ( RSA.generateKeyPair(client.getClientName()),client.getClientName());
+                RSA.generateKeyPair();
+                RSA.storeRSAKeys ( RSA.generateKeyPair(),client.getClientName());
                 client.setPrivateKey();
                 client.setPublicKey();
+
+                client.execute();
         }
     }
 

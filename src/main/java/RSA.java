@@ -3,7 +3,7 @@ import java.security.*;
 import java.io.*;
 
 public class RSA {
-    public static KeyPair generateKeyPair ( String client_name) throws Exception {
+    public static KeyPair generateKeyPair () throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance ( "RSA" );
         keyPairGenerator.initialize ( 2048 );
         return keyPairGenerator.generateKeyPair();

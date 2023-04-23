@@ -2,17 +2,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.security.PublicKey;
+import java.util.HashMap;
 
 /**
  * This class represents the client handler. It handles the communication with the client. It reads the file from the
  * server and sends it to the client.
  */
 public class ClientHandler extends Thread {
-
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
     private final Socket client;
     private final boolean isConnected;
+    // Initialize HashMap to keep track of request counts for each client
+
 
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
