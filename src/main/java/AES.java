@@ -11,12 +11,12 @@ public class AES {
      *
      * @throws Exception when the decryption fails
      */
-    public static byte[] decrypt ( byte[] message , byte[] secretKey ) throws Exception {
-        byte[] secretKeyPadded = ByteBuffer.allocate ( 16 ).put ( secretKey ).array ( );
-        SecretKeySpec secreteKeySpec = new SecretKeySpec ( secretKeyPadded , "AES" );
-        Cipher cipher = Cipher.getInstance ( "AES/ECB/PKCS5Padding" );
-        cipher.init ( Cipher.DECRYPT_MODE , secreteKeySpec );
-        return cipher.doFinal ( message );
+    public static byte[] decrypt(byte[] message, byte[] secretKey) throws Exception {
+        byte[] secretKeyPadded = ByteBuffer.allocate(32).put(secretKey).array();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+        return cipher.doFinal(message);
     }
 
     /**
@@ -27,12 +27,11 @@ public class AES {
      *
      * @throws Exception when the encryption fails
      */
-    public static byte[] encrypt ( byte[] message , byte[] secretKey ) throws Exception {
-        byte[] secretKeyPadded = ByteBuffer.allocate ( 16 ).put ( secretKey ).array ( );
-        SecretKeySpec secreteKeySpec = new SecretKeySpec ( secretKeyPadded , "AES" );
-        Cipher cipher = Cipher.getInstance ( "AES/ECB/PKCS5Padding" );
-        cipher.init ( Cipher.ENCRYPT_MODE , secreteKeySpec );
-        return cipher.doFinal ( message );
+    public static byte[] encrypt(byte[] message, byte[] secretKey) throws Exception {
+        byte[] secretKeyPadded = ByteBuffer.allocate(32).put(secretKey).array();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+        return cipher.doFinal(message);
     }
-
 }
