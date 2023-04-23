@@ -23,7 +23,7 @@ public class RSA {
 
         // Write the public key
         String publicKeyFolder = "pki/public_keys/";
-        File publiKeyFile = new File(publicKeyFolder, "publicKey.key");
+        File publiKeyFile = new File(publicKeyFolder, client_name+ "PUk.key");
         FileOutputStream pubFOS = new FileOutputStream(publiKeyFile);
         ObjectOutputStream pubOOS = new ObjectOutputStream(pubFOS);
         pubOOS.writeObject(keyPair.getPublic());
