@@ -17,7 +17,7 @@ public class RequestUtils {
      */
     public static String getAbsoluteFilePath ( String request ) {
         try {
-            String fileName = getFileNameFromRequest ( request );
+            String fileName = request;
             return String.format ( SERVER_PATH_FILE_FORMAT , Server.FILE_PATH , fileName );
         } catch ( IllegalArgumentException e ) {
             throw new IllegalArgumentException ( "Invalid request" );

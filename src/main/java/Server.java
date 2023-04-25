@@ -1,9 +1,11 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import java.util.Map;
  */
 public class Server implements Runnable {
     public static final String FILE_PATH = "server/files";
-    public final String server_name = "Server_G11";
+    public static final String server_name = "Server_G11";
     private final ServerSocket server;
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
@@ -47,19 +49,13 @@ public class Server implements Runnable {
             requestCounter.put(clientPublicKey, 1);
         }
     }
-    public void printMap(){
-        // Print the map
-        for (Map.Entry<PublicKey, Integer> entry : requestCounter.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
-        }
-    }
+
     @Override
     public void run ( ) {
         try {
             while ( isConnected ) {
                 Socket client = server.accept ( );
                 // Process the request
-                printMap();
                 process ( client );
             }
             closeConnection ( );
