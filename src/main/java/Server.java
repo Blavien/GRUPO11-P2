@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class Server implements Runnable {
     public static final String FILE_PATH = "server/files";
+    public final String server_name = "Server_G11";
     private final ServerSocket server;
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
@@ -34,6 +35,7 @@ public class Server implements Runnable {
         KeyPair keyPair = RSA.generateKeyPair();
         this.privateRSAKey = keyPair.getPrivate();
         this.publicRSAKey = keyPair.getPublic();
+        RSA.storeRSAKeys(keyPair,server_name);
     }
     public static void updateRequestCounter(PublicKey clientPublicKey){
         if (requestCounter.containsKey(clientPublicKey)) {

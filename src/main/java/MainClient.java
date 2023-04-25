@@ -12,9 +12,9 @@ public class MainClient {
             case 1:
                 Client client = new Client ( 8000 );
 
-                client.setClientName("Sara");
-                RSA.generateKeyPair();
-                RSA.storeRSAKeys ( RSA.generateKeyPair(),client.getClientName());
+                client.setClientName("RARA");
+                KeyPair clientKeyPair = RSA.generateKeyPair();
+                RSA.storeRSAKeys ( clientKeyPair,client.getClientName());
                 client.setPrivateKey();
                 client.setPublicKey();
 
