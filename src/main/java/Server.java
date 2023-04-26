@@ -20,7 +20,6 @@ public class Server implements Runnable {
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
     private final PublicKey publicRSAKey;
-    private static HashMap<PublicKey, Integer> requestCounter;
 
     /**
      * Constructs a Server object by specifying the port number. The server will be then created on the specified port.
@@ -31,7 +30,6 @@ public class Server implements Runnable {
      * @throws IOException if an I/O error occurs when opening the socket
      */
     public Server ( int port ) throws Exception {
-        this.requestCounter = new HashMap<>();
         server = new ServerSocket ( port );
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
         KeyPair keyPair = RSA.generateKeyPair();
@@ -39,17 +37,6 @@ public class Server implements Runnable {
         this.publicRSAKey = keyPair.getPublic();
         RSA.storeRSAKeys(keyPair,server_name);
     }
-    public static void updateRequestCounter(PublicKey clientPublicKey){
-        if (requestCounter.containsKey(clientPublicKey)) {
-            // Increment request count for client
-            int currentCount = requestCounter.get(clientPublicKey);
-            requestCounter.put(clientPublicKey, currentCount + 1);
-        } else {
-            // Add client to HashMap with request count of 1
-            requestCounter.put(clientPublicKey, 1);
-        }
-    }
-
     @Override
     public void run ( ) {
         try {

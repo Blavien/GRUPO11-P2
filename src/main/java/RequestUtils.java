@@ -47,7 +47,6 @@ public class RequestUtils {
 
     public static ArrayList<String> splitRequest(String message) throws Exception{
         ArrayList<String> requestInfo = new ArrayList<>();
-
         String[] splitMessage =message.split(": ");
         //Splits to get the client name
         requestInfo.add(splitMessage[1]);
@@ -97,7 +96,7 @@ public class RequestUtils {
             out.close();
         }
     }
-    public boolean requestLimit (String request) throws IOException{
+    public static boolean requestLimit (String request) throws IOException{
         String client_name = request;
 
         File file = new File(REGISTRY_PATH);
@@ -126,7 +125,7 @@ public class RequestUtils {
             return false;
         }
     }
-    public void resetRequestCounter(String username) throws IOException {
+    public static void resetRequestCounter(String username) throws IOException {
         File file = new File(REGISTRY_PATH);
         boolean userFound = false;
         List<String> lines = new ArrayList<>();
@@ -138,7 +137,7 @@ public class RequestUtils {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(" : ");
                 if (parts[0].equals(username)) {
-                    lines.add(parts[0] + " : 1");
+                    lines.add(parts[0] + " : 0");
                     userFound = true;
                 } else {
                     lines.add(line);

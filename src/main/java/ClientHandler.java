@@ -43,7 +43,7 @@ public class ClientHandler extends Thread {
                 // Reads the message to extract the path of the file
                 Message message = ( Message ) in.readObject ( );
                 String request = new String ( message.getMessage ( ) );
-
+                System.out.println("\n***** SERVER *****\n"+ request);
                 //Splits message received
                 requestSplit = RequestUtils.splitRequest(request);
                 //Regista os número de pedidos feitos por este utilizador
