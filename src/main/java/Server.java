@@ -37,6 +37,9 @@ public class Server implements Runnable {
         this.publicRSAKey = keyPair.getPublic();
         RSA.storeRSAKeys(keyPair,server_name);
     }
+    public String getServer_name(){
+        return this.server_name;
+    }
     @Override
     public void run ( ) {
         try {
