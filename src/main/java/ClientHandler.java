@@ -48,6 +48,8 @@ public class ClientHandler extends Thread {
                 requestSplit = RequestUtils.splitRequest(request);
                 //Regista os número de pedidos feitos por este utilizador
                 RequestUtils.registerRequests (requestSplit);
+
+
                 // Reads the file and sends it to the client
                 byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
                 sendFile ( content );

@@ -60,8 +60,9 @@ public class RequestUtils {
         int request_counter = 1; //For the first request
         boolean userFound = false;
 
-        // Se exisitir ele vai lá procurar o client name e incrementar o counter
-        if (file.exists()) {
+        if (!file.exists()){
+            file.createNewFile();
+        }else {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
@@ -96,15 +97,20 @@ public class RequestUtils {
             out.close();
         }
     }
-    public static boolean requestLimit (String request) throws IOException{
+    public static void emptyRegistry () throws Exception{
+        //Limpa o ficheiro de execuções do programa anteriores
+        new PrintWriter(REGISTRY_PATH).close();
+    }
+    public static int requestLimit (String request) throws IOException{
         String client_name = request;
 
         File file = new File(REGISTRY_PATH);
         boolean userFound = false;
         int requestCounter = 0;
 
-        // Search for client name and update request counter
-        if (file.exists()) {
+        if (!file.exists()){
+            file.createNewFile();
+        }else {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
@@ -117,21 +123,16 @@ public class RequestUtils {
             }
             br.close();
         }
-
-        // Check if request limit reached
-        if (userFound && requestCounter == 5) {
-            return true;
-        } else {
-            return false;
-        }
+        return requestCounter;
     }
     public static void resetRequestCounter(String username) throws IOException {
         File file = new File(REGISTRY_PATH);
         boolean userFound = false;
         List<String> lines = new ArrayList<>();
 
-        // Search for the user in the file and replace the request counter with 1
-        if (file.exists()) {
+        if (!file.exists()){
+            file.createNewFile();
+        }else {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {

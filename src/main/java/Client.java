@@ -25,7 +25,7 @@ public class Client {
    private PrivateKey privateKey;
    private PublicKey publicKey;
    private SecretKey macKey;
-   private int requests;
+   private int requestLimit;
    /**
     * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
     * send a message.
@@ -35,7 +35,7 @@ public class Client {
     * @throws IOException when an I/O error occurs when creating the socket
     */
    public Client ( int port ) throws Exception {
-       this.requests = 0;
+       this.requestLimit = 0;
        client = new Socket ( HOST , port );
        out = new ObjectOutputStream ( client.getOutputStream ( ) );
        in = new ObjectInputStream ( client.getInputStream ( ) );
@@ -49,7 +49,19 @@ public class Client {
 
    }
 
-   public SecretKey getMacKey(){
+    public boolean reachedLimit() throws IOException {
+       requestLimit = RequestUtils.requestLimit(this.client_name); //Busca o número de requests guardados no ficheiroSystem.out.println(requestLimit);
+        if(requestLimit >= 5 ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public int getRequestLimit() throws Exception{
+       return RequestUtils.requestLimit(this.client_name);
+    }
+
+    public SecretKey getMacKey(){
        return this.macKey;
    }
    public void setMacKey() throws Exception{
