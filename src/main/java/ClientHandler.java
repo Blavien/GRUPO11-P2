@@ -42,6 +42,8 @@ public class ClientHandler extends Thread {
             while ( isConnected ) {
                 // Reads the message to extract the path of the file
                 Message message = ( Message ) in.readObject ( );
+                //concluir este !!!!!!!!!!!!!!!!!!!
+                //AES.decrypt(message,xxx);
                 String request = new String ( message.getMessage ( ) );
                 System.out.println("\n***** SERVER *****\n"+ request);
                 //Splits message received
@@ -50,8 +52,12 @@ public class ClientHandler extends Thread {
                 RequestUtils.registerRequests (requestSplit);
 
 
+                //Escreve o ficheiro descriptografado nos files NÃO TERMINAR ESTE
+                //RSA.writeDecryptedFile(requestSplit.get(0),requestSplit.get(1));
                 // Reads the file and sends it to the client
                 byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
+                //TERMINAR AQUI
+                //AES.encrypt(content,xxx);
                 sendFile ( content );
             }
             // Close connection

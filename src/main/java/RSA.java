@@ -1,6 +1,7 @@
 import javax.crypto.Cipher;
 import java.security.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class RSA {
     public static KeyPair generateKeyPair () throws Exception {
@@ -29,6 +30,7 @@ public class RSA {
         pubOOS.writeObject(keyPair.getPublic());
         pubOOS.close();
     }
+
     public static PrivateKey getPrivateKey(String client_name) throws Exception{
         String privateKeyFolder = client_name + "/private";
         FileInputStream fis = new FileInputStream(privateKeyFolder + "/privateKey.key");
@@ -56,5 +58,21 @@ public class RSA {
         cipher.init ( Cipher.DECRYPT_MODE , privateKey );
         return cipher.doFinal ( message );
     }
+
+
+    public static void writeDecryptedFile(String client_name,String nomeFicheiro) throws Exception{
+        String privateKeyFolder = client_name + "/files";
+        File privateUserKey = new File(privateKeyFolder);
+        privateUserKey.mkdirs();
+
+
+        File arquivo = new File(client_name + "/files/ficheiroFinal.txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+        bw.write(nomeFicheiro);
+        bw.close();
+    }
+
+
+
 
 }

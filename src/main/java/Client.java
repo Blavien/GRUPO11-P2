@@ -91,12 +91,14 @@ public class Client {
    public KeyPair initClient() throws Exception {
        KeyPair clientKeyPair = RSA.generateKeyPair();
        RSA.storeRSAKeys ( clientKeyPair,this.client_name);
+
        return clientKeyPair;
    }
    /**
     * Executes the client. It reads the file from the console and sends it to the server. It waits for the response and
     * writes the file to the temporary directory.
     */
+
    public void execute ( ) {
            //Start the handshake here
 
@@ -109,10 +111,13 @@ public class Client {
            // Reads the message to extract the path of the file
            System.out.println ( "Write the path of the file" );
            String request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
+           //CONCLUIR A CHAVE
+          // AES.encrypt(request.getBytes(),);
            // Request the file
            sendMessage ( request );
            // Waits for the response
            processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
+
        }
     }
    /**
@@ -124,7 +129,9 @@ public class Client {
        try {
            Message response = ( Message ) in.readObject ( );
            System.out.println ( "File received" );
-           FileHandler.writeFile ( userDir + "/" + fileName , response.getMessage ( ) );
+           //TERMINAR ISTO
+          //String x= AES.decrypt(response.getMessage(),xxx);
+           FileHandler.writeFile ( this.client_name + "/files" + fileName , x);
        } catch ( IOException | ClassNotFoundException e ) {
            e.printStackTrace ( );
        }
