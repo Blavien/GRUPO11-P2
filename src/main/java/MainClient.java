@@ -17,15 +17,17 @@ public class MainClient {
                     System.out.println("\nInsert your username");
                     String client_name = in.next();
                     client.setClientName(client_name);
-                    client.initClient();
+                    //client.initClient();
                     client.execute(); //HANDSHAKE
                     while (subAlive){
+                        client.teste();
                         System.out.println("\n*************** USER ACTIONS *******************");
                         System.out.println("\n1. Request your file");
                         System.out.println("2. Change accounts");
                         int req = in.nextInt();
                         switch (req){
                             case 1:
+
                                 client.request();
                                 break;
                             case 2:

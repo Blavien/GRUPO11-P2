@@ -13,8 +13,8 @@ public class AES {
      */
     public static byte[] decrypt(byte[] message, byte[] secretKey) throws Exception {
         byte[] secretKeyPadded = ByteBuffer.allocate(32).put(secretKey).array();
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyPadded, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
         return cipher.doFinal(message);
     }
@@ -29,8 +29,8 @@ public class AES {
      */
     public static byte[] encrypt(byte[] message, byte[] secretKey) throws Exception {
         byte[] secretKeyPadded = ByteBuffer.allocate(32).put(secretKey).array();
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyPadded, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
         return cipher.doFinal(message);
     }

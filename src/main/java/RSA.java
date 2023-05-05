@@ -1,8 +1,52 @@
 import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.io.*;
 
 public class RSA {
+
+    public static PrivateKey getPrivateKey(String client_name) throws Exception{
+        String privateKeyFolder = client_name + "/private";
+        FileInputStream fis = new FileInputStream(privateKeyFolder + "/privateKey.key");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        PrivateKey privateKey = (PrivateKey) ois.readObject();
+        ois.close();
+        return privateKey;
+    }
+    public static byte[] decryptMessage ( byte[] message , byte[] secretKey ) throws Exception {
+        byte[] secretKeyPadded = ByteBuffer.allocate ( 16 ).put ( secretKey ).array ( );
+        SecretKeySpec secreteKeySpec = new SecretKeySpec ( secretKeyPadded , "AES" );
+        Cipher cipher = Cipher.getInstance ( "AES/ECB/PKCS5Padding" );
+        cipher.init ( Cipher.DECRYPT_MODE , secreteKeySpec );
+        return cipher.doFinal ( message );
+    }
+    public static byte[] encryptMessage ( byte[] message , byte[] secretKey ) throws Exception {
+        byte[] secretKeyPadded = ByteBuffer.allocate ( 16 ).put ( secretKey ).array ( );
+        SecretKeySpec secreteKeySpec = new SecretKeySpec ( secretKeyPadded , "AES" );
+        Cipher cipher = Cipher.getInstance ( "AES/ECB/PKCS5Padding" );
+        cipher.init ( Cipher.ENCRYPT_MODE , secreteKeySpec );
+        return cipher.doFinal ( message );
+    }
+    public static PublicKey getPublicKey(String client_name) throws Exception{
+        String publicKeyFolder = "pki/public_keys/";
+        FileInputStream fis = new FileInputStream(publicKeyFolder + client_name+"PUk.key");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        PublicKey publicKey = (PublicKey) ois.readObject();
+        ois.close();
+        return publicKey;
+    }
+    public static byte[] encryptRSA ( byte[] message , Key publicKey ) throws Exception {
+        Cipher cipher = Cipher.getInstance ( "RSA" );
+        cipher.init ( Cipher.ENCRYPT_MODE , publicKey );
+        return cipher.doFinal ( message );
+    }
+
+    public static byte[] decryptRSA ( byte[] message , Key privateKey ) throws Exception {
+        Cipher cipher = Cipher.getInstance ( "RSA" );
+        cipher.init ( Cipher.DECRYPT_MODE , privateKey );
+        return cipher.doFinal ( message );
+    }
     public static KeyPair generateKeyPair () throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance ( "RSA" );
         keyPairGenerator.initialize ( 2048 );
@@ -29,32 +73,4 @@ public class RSA {
         pubOOS.writeObject(keyPair.getPublic());
         pubOOS.close();
     }
-    public static PrivateKey getPrivateKey(String client_name) throws Exception{
-        String privateKeyFolder = client_name + "/private";
-        FileInputStream fis = new FileInputStream(privateKeyFolder + "/privateKey.key");
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        PrivateKey privateKey = (PrivateKey) ois.readObject();
-        ois.close();
-        return privateKey;
-    }
-    public static PublicKey getPublicKey(String client_name) throws Exception{
-        String publicKeyFolder = "pki/public_keys/";
-        FileInputStream fis = new FileInputStream(publicKeyFolder + "/publicKey.key");
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        PublicKey publicKey = (PublicKey) ois.readObject();
-        ois.close();
-        return publicKey;
-    }
-    public static byte[] encryptRSA ( byte[] message , PublicKey publicKey ) throws Exception {
-        Cipher cipher = Cipher.getInstance ( "RSA" );
-        cipher.init ( Cipher.ENCRYPT_MODE , publicKey );
-        return cipher.doFinal ( message );
-    }
-
-    public static byte[] decryptRSA ( byte[] message , PrivateKey privateKey ) throws Exception {
-        Cipher cipher = Cipher.getInstance ( "RSA" );
-        cipher.init ( Cipher.DECRYPT_MODE , privateKey );
-        return cipher.doFinal ( message );
-    }
-
 }
