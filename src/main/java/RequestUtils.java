@@ -10,6 +10,7 @@ public class RequestUtils {
     public static final String REQUEST_REGEX = "GET : (\\w+.txt)";
     public static final String SERVER_PATH_FILE_FORMAT = "%s/%s";
     private static final String REGISTRY_PATH = "server/Registry/registry.txt";
+    private static final String HANDSHAKE_PATH = "server/Registry/hanshake.txt";
     private final int MAX_REQUESTS = 5;
 
     /**
@@ -97,12 +98,12 @@ public class RequestUtils {
             out.close();
         }
     }
-    public static void emptyRegistry () throws Exception{
+    public static void emptyRegistry (String file) throws Exception{
         //Limpa o ficheiro de execuções do programa anteriores
-        new PrintWriter(REGISTRY_PATH).close();
+        new PrintWriter(file).close();
     }
-    public static int requestLimit (String request) throws IOException{
-        String client_name = request;
+    public static int getRequestLimit(String name) throws IOException{
+        String client_name = name;
 
         File file = new File(REGISTRY_PATH);
         boolean userFound = false;
@@ -117,7 +118,6 @@ public class RequestUtils {
                 String[] parts = line.split(" : ");
                 if (parts[0].equals(client_name)) {
                     requestCounter = Integer.parseInt(parts[1]);
-                    userFound = true;
                     break;
                 }
             }
@@ -156,5 +156,40 @@ public class RequestUtils {
             out.close();
         }
     }
+    public static List<String> getUsernamesFromRegistry() throws IOException {
+        List<String> usernames = new ArrayList<>();
 
+        File file = new File(REGISTRY_PATH);
+        if (!file.exists()){
+            file.createNewFile();
+        } else {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(" : ");
+                if (parts.length >= 1) {
+                    String username = parts[0];
+                    usernames.add(username);
+                }
+            }
+            br.close();
+        }
+
+        return usernames;
+    }
+
+    public static int readNumberFromFile() throws IOException {
+        String filename = HANDSHAKE_PATH;
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        int number = Integer.parseInt(reader.readLine());
+        reader.close();
+        return number;
+    }
+    public static void writeNumberToFile(int number) throws Exception {
+        emptyRegistry (HANDSHAKE_PATH);
+        String filename = HANDSHAKE_PATH;
+        Writer writer = new FileWriter(filename);
+        writer.write(Integer.toString(number));
+        writer.close();
+    }
 }

@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,10 @@ public class Server implements Runnable {
     private final PublicKey publicRSAKey;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-
+    private String message;
+    private ArrayList<String> requestSplit;
+    public static boolean doHandshake = false;
+    private PublicKey clientPublicRSAKey;
     /**
      * Constructs a Server object by specifying the port number. The server will be then created on the specified port.
      * The server will be accepting connections from all local addresses.
@@ -40,23 +44,38 @@ public class Server implements Runnable {
         KeyPair keyPair = RSA.generateKeyPair();
         this.privateRSAKey = keyPair.getPrivate();
         this.publicRSAKey = keyPair.getPublic();
+
         RSA.storeRSAKeys(keyPair,server_name);
+    }
+    public void setMessage(byte[] message){
+        this.message = (new String (message));
+    }
+    public String getMessage(){
+        return this.message;
+    }
+    public PublicKey doHandshake(Socket client) throws Exception {
+        in = new ObjectInputStream( client.getInputStream ( ) );
+        out = new ObjectOutputStream( client.getOutputStream ( ) );
+        clientPublicRSAKey = rsaKeyDistribution ( in );
+
+        //System.out.println("Handshake was done");
+        return clientPublicRSAKey;
     }
     @Override
     public void run ( ) {
         try {
+            // Perform key distribution
             while ( isConnected ) {
                 Socket client = server.accept ( );
-                in = new ObjectInputStream( client.getInputStream ( ) );
-                out = new ObjectOutputStream( client.getOutputStream ( ) );
-                // Perform key distribution
-                PublicKey clientPublicRSAKey = rsaKeyDistribution ( in );
-                // Process the request
-                process ( in , clientPublicRSAKey );
-                // Close connection
-                //Atribui as chaves criadass pelo RSA a estas vars
-                // Process the request
-                process ( client );
+
+                System.out.println("Client connected");
+                doHandshake(client);
+                int i = 0;
+                while (i != 5){
+                    clientHandlerProcess(process ( in , clientPublicRSAKey ));
+                    i++;
+                }
+
             }
             closeConnection ( );
         } catch ( Exception e ) {
@@ -64,23 +83,21 @@ public class Server implements Runnable {
         }
     }
 
-    private void process ( ObjectInputStream in , PublicKey senderPublicRSAKey ) throws Exception {
+    private byte[] process ( ObjectInputStream in , PublicKey senderPublicRSAKey ) throws Exception {
         // Agree on a shared secret
         BigInteger sharedSecret = agreeOnSharedSecret ( senderPublicRSAKey );
         // Reads the message object
         Message messageObj = ( Message ) in.readObject ( );
         // Extracts and decrypt the message
         byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret.toByteArray ( ) );
-        System.out.println(decryptedMessage.toString());
         // Computes the digest of the received message
         byte[] computedDigest = Integrity.generateDigest ( decryptedMessage );
         // Verifies the integrity of the message
         if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );
         }
-        System.out.println ( new String ( decryptedMessage ) );
+        return decryptedMessage;
     }
-
     /**
      * Performs the Diffie-Hellman algorithm to agree on a shared private key.
      *
@@ -103,16 +120,6 @@ public class Server implements Runnable {
     }
 
     /**
-     * Processes the request from the client.
-     *
-     * @throws IOException if an I/O error occurs when reading stream header
-     */
-    private void process ( Socket client ) throws IOException {
-        ClientHandler clientHandler = new ClientHandler ( client );
-        clientHandler.start ( );
-    }
-
-    /**
      * Closes the connection and the associated streams.
      */
     private void closeConnection ( ) {
@@ -125,12 +132,17 @@ public class Server implements Runnable {
 
     private PublicKey rsaKeyDistribution ( ObjectInputStream in ) throws Exception {
         // Extract the public key
+        System.out.println("Reading client pubk");
         PublicKey senderPublicRSAKey = ( PublicKey ) in.readObject ( );
+
+        System.out.println("Read client pubk");
         // Send the public key
         sendPublicRSAKey ( );
+        System.out.println("Sending mine");
         return senderPublicRSAKey;
     }
     private void sendPublicRSAKey ( ) throws IOException {
+        System.out.println("SERVER SENDING THEM PUK : ");
         out.writeObject ( publicRSAKey );
         out.flush ( );
     }
@@ -139,5 +151,31 @@ public class Server implements Runnable {
         out.writeObject ( RSA.encryptRSA ( publicKey.toByteArray ( ) , this.privateRSAKey ) );
     }
 
+    public void processCH (Socket client, byte[] message){
+        try {
+            ClientHandler clienth = new ClientHandler(client,message);
+            clienth.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    //SE O CH FUNCIONA-SE ISTO ESTARIA NO CLIENT HANDLER
+    public void clientHandlerProcess(byte[] message) throws Exception {
+        String request = new String(message);
+        System.out.println("\n***** SERVER *****\n"+ request);
+        //Splits message received
+        requestSplit = RequestUtils.splitRequest(request);
+        //Regista os número de pedidos feitos por este utilizador
+        RequestUtils.registerRequests (requestSplit);
+        // Reads the file and sends it to the client
+        byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
+        sendFile ( content );
+    }
+    private void sendFile ( byte[] content ) throws IOException {
+        Message response = new Message ( content );
+        out.writeObject ( response );
+        out.flush ( );
+    }
 
 }

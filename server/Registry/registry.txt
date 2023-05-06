@@ -1,0 +1,11 @@
+Sara : 4
+Raquel : 5
+SSS : 5
+AA : 5
+AAA : 5
+WQ : 0
+DADA : 4
+SARA : 1
+D : 5
+FA : 0
+sara : 1

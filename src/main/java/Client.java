@@ -41,6 +41,7 @@ public class Client {
    public Client ( int port ) throws Exception {
       this.requestLimit = 0;
       client = new Socket ( HOST , port );
+
       out = new ObjectOutputStream ( client.getOutputStream ( ) );
       in = new ObjectInputStream ( client.getInputStream ( ) );
       isConnected = true; // TODO: Check if this is necessary or if it should be controlled
@@ -55,7 +56,6 @@ public class Client {
        this.setPublicKey();
 
        serverPublicRSAKey = rsaKeyDistribution ( );
-
    }
    /*a*/
    public boolean isConnected() {
@@ -98,9 +98,8 @@ public class Client {
        }
    }
    public int getRequestLimit() throws Exception{
-       return RequestUtils.requestLimit(this.client_name);
+       return RequestUtils.getRequestLimit(this.client_name);
    }
-
    /**
     * Reads the response from the server and writes the file to the temporary directory.
     *
@@ -134,12 +133,16 @@ public class Client {
 
     private PublicKey rsaKeyDistribution ( ) throws Exception {
         // Sends the public key
+        System.out.println("CLIENT STARTED THE SEND");
         sendPublicRSAKey ( );
+        System.out.println("SEND CLIENT KEY");
         // Receive the public key of the sender
+        System.out.println("READ SERVER KEY");
         return ( PublicKey ) in.readObject ( );
     }
 
     private void sendPublicRSAKey ( ) throws IOException {
+        System.out.println("CLIENT SENDING THEM PUK : ");
         out.writeObject ( publicKey );
         out.flush ( );
     }
@@ -191,7 +194,7 @@ public class Client {
             // Request the file
             sendMessage ( request );
             // Waits for the response
-            //processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
+            processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
         }
     }
 
