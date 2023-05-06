@@ -17,8 +17,8 @@ public class MainClient {
                     System.out.println("\nInsert your username");
                     String client_name = in.next();
                     client.setClientName(client_name);
-                    client.initClient();
-                    client.execute(); //HANDSHAKE
+
+                    //client.execute(); //HANDSHAKE
 
                     while (subAlive == true){
 
@@ -33,9 +33,11 @@ public class MainClient {
                         System.out.println("\n1. Request file");
                         System.out.println("2. End session");
                         int req = in.nextInt();
+
                         switch (req){
                             case 1:
-                                client.request();
+                                //client.teste();
+                                client.execute();
                                 break;
                             case 2:
                                 subAlive = false;
@@ -43,7 +45,9 @@ public class MainClient {
                         }
                     }
 
+                    client.setConnected(false);
                     break;
+
                 case 2:
                     mainAlive = false;
                     break;
