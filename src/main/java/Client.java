@@ -115,6 +115,7 @@ public class Client {
             Message response = ( Message ) in.readObject ( );
             System.out.println ( "File received" );
             FileHandler.writeFile ( userDir + "/" + fileName , response.getMessage ( ) );
+            System.out.println(response.getMessage().toString());
         } catch ( IOException | ClassNotFoundException e ) {
             e.printStackTrace ( );
         }
