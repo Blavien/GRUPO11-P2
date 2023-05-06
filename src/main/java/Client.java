@@ -1,7 +1,5 @@
 import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.security.KeyPair;
@@ -26,7 +24,9 @@ public class Client {
    private PublicKey publicKey;
    private SecretKey macKey;
    private int requestLimit;
-   /**
+
+   private String fileName;
+    /**
     * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
     * send a message.
     *
@@ -111,7 +111,9 @@ public class Client {
            // Reads the message to extract the path of the file
            System.out.println ( "Write the path of the file" );
            String request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
+           this.setFileName(RequestUtils.splitRequest(request).get(1));
            //CONCLUIR A CHAVE
+           //Encriptar o pedido do cliente
           // AES.encrypt(request.getBytes(),);
            // Request the file
            sendMessage ( request );
@@ -130,8 +132,18 @@ public class Client {
            Message response = ( Message ) in.readObject ( );
            System.out.println ( "File received" );
            //TERMINAR ISTO
-          //String x= AES.decrypt(response.getMessage(),xxx);
-           FileHandler.writeFile ( this.client_name + "/files" + fileName , x);
+           String Folder = client_name + "/files/" + this.getFileName();
+           File userFolder = new File(Folder);
+           if (!userFolder.exists()) {
+               userFolder.mkdirs();
+           }
+
+           // Desencripta a resposta do servidor
+           //String x= AES.decrypt(response.getMessage(),xxx);
+           //Guarda a resposta do servidor em um ficheiro à parte
+           FileHandler.writeFile ( this.client_name + "/files/" + this.getFileName() , x);
+           //Print da resposta na consola
+           System.out.println(x);
        } catch ( IOException | ClassNotFoundException e ) {
            e.printStackTrace ( );
        }
@@ -164,5 +176,12 @@ public class Client {
            throw new RuntimeException ( e );
        }
    }
+
+    public void setFileName(String request){
+        this.fileName = request;
+    }
+    public String getFileName(){
+        return this.fileName;
+    }
 
 }
