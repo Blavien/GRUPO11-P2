@@ -31,6 +31,9 @@ public class Client {
    private int requestLimit;
    private String fileName;
     private PublicKey serverPublicRSAKey;
+
+    private String unitedMessage;
+    private int unitedCounter;
    /**
     * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
     * send a message.
@@ -57,6 +60,8 @@ public class Client {
        this.setPublicKey();
 
        serverPublicRSAKey = rsaKeyDistribution ( );
+       unitedMessage="";
+       unitedCounter=0;
    }
    /*a*/
    public boolean isConnected() {
@@ -116,23 +121,52 @@ public class Client {
            if ( ! Integrity.verifyDigest ( response.getSignature ( ) , computedDigest ) ) {
                throw new RuntimeException ( "The integrity of the message is not verified" );
            }
-           String decryptedFileString = new String(decryptedFile);
-           System.out.println ( "File received" );
-           System.out.println ( "Conteúdo do ficheiro recebido: " );
-           System.out.println (decryptedFileString);
+
+           if(Server.getDividedMessage()) {
+               unitedCounter++;
+               String divMsg = new String(decryptedFile);
+               unitedMessage += divMsg;
+               System.out.println("United message start");
+               System.out.println(unitedMessage);
+               System.out.println("United message end");
+               System.out.println("File received");
+               if(unitedCounter==Server.getDividedFinished()){
+
+                   //Criação da pasta que receberá os ficheiros
+                   String privateClientPath = this.client_name + "/files";
+                   File privateClientFolder = new File(privateClientPath);
+                   privateClientFolder.mkdirs();
+
+                   //Criação do ficheiro de texto que receberá o conteúdo do ficheiro de texto pedido e a escrita do mesmo
+
+                   File arquivo = new File(this.client_name + "/files/User_" + this.getFileName());
+                   BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+                   bw.write(unitedMessage);
+                   System.out.println(unitedMessage);
+                   bw.close();
+                   Server.setDividedFinished(0);
+               }
+
+           }
+
+            else {
+               //Criação da pasta que receberá os ficheiros
+               String privateClientPath = this.client_name + "/files";
+               File privateClientFolder = new File(privateClientPath);
+               privateClientFolder.mkdirs();
+
+               //Criação do ficheiro de texto que receberá o conteúdo do ficheiro de texto pedido e a escrita do mesmo
+               String decryptedFileString = new String(decryptedFile);
+               File arquivo = new File(this.client_name + "/files/User_" + this.getFileName());
+               BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
 
 
-            //Criação da pasta que receberá os ficheiros
-           String privateClientPath = this.client_name + "/files";
-           File privateClientFolder = new File(privateClientPath);
-           privateClientFolder.mkdirs();
 
-           //Criação do ficheiro de texto que receberá o conteúdo do ficheiro de texto pedido e a escrita do mesmo
-           File arquivo = new File(this.client_name + "/files/User_" +this.getFileName() );
-           BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
-           bw.write(decryptedFileString);
-           bw.close();
+              bw.write(decryptedFileString);
 
+               bw.close();
+
+           }
            //FileHandler.writeFile ( decryptedFileString.getBytes() );
        } catch ( IOException | ClassNotFoundException e ) {
            e.printStackTrace ( );
@@ -141,6 +175,7 @@ public class Client {
     /**
      * Closes the connection by closing the socket and the streams.
      */
+
     private void closeConnection ( ) {
         try {
             client.close ( );

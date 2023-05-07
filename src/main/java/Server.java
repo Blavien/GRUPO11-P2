@@ -9,9 +9,11 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * This class represents a server that receives a message from the clients. The server is implemented as a thread. Each
@@ -30,6 +32,10 @@ public class Server implements Runnable {
     private ArrayList<String> requestSplit;
     public static boolean doHandshake = false;
     private PublicKey clientPublicRSAKey;
+
+    private static boolean dividedMessage;
+
+    private static int dividedFinished;
     /**
      * Constructs a Server object by specifying the port number. The server will be then created on the specified port.
      * The server will be accepting connections from all local addresses.
@@ -44,7 +50,8 @@ public class Server implements Runnable {
         KeyPair keyPair = RSA.generateKeyPair();
         this.privateRSAKey = keyPair.getPrivate();
         this.publicRSAKey = keyPair.getPublic();
-
+        dividedMessage = false;
+        dividedFinished = 0;
         RSA.storeRSAKeys(keyPair,server_name);
     }
     public void setMessage(byte[] message){
@@ -177,11 +184,55 @@ public class Server implements Runnable {
         System.out.println(auxContent);
 
 
+        System.out.println("Aqui está o conteudo dividido do ficheiro que será enviado: ");
+        int contentSize = content.length;
+        int numParts = (int) Math.ceil((double) contentSize / 2048);
+        setDividedFinished(numParts);
+        if(contentSize>2048) {
+            setDividedMessage(true);
+            List<String> contentDividido = splitStringBySize(auxContent);
+            for (int i = 0; i < contentDividido.size(); i++) {
+                System.out.println(contentDividido.get(i));
+                sendFile(contentDividido.get(i).getBytes());
+                System.out.println("Fim de uma mensagem");
+            }
+            setDividedMessage(false);
+        }
+        else {
 
+            sendFile(content);
 
+        }
 
-        sendFile ( content );
     }
+
+    public static List<String> splitStringBySize(String input) {
+        List<String> output = new ArrayList<>();
+
+        // Verifica o tamanho da string em bytes
+        int inputSize = input.getBytes().length;
+
+        if (inputSize <= 2048) { // Se o tamanho for menor ou igual a 2KB, adiciona a string inteira na lista de saída
+            output.add(input);
+        } else { // Caso contrário, divide a string em pedaços de no máximo 2KB
+            int numParts = (int) Math.ceil((double) inputSize / 2048); // Calcula o número de pedaços necessários
+            int remainingBytes = inputSize;
+            int start = 0;
+            int end = 0;
+
+            for (int i = 0; i < numParts; i++) {
+                end += (remainingBytes > 2048) ? 2048 : remainingBytes; // Define o final do pedaço, garantindo que não ultrapasse 2KB
+                String part = input.substring(start, end); // Extrai o pedaço da string original
+                output.add(part); // Adiciona o pedaço na lista de saída
+                start = end;
+                remainingBytes = inputSize - end;
+            }
+        }
+
+        return output;
+    }
+
+
     private void sendFile ( byte[] content ) throws Exception {
 
 
@@ -194,14 +245,21 @@ public class Server implements Runnable {
         // Creates the message object
         Message responseObj = new Message ( encryptedResponse , digest );
         // Sends the encrypted message
-
-        String auxContent = new String(content);
-        System.out.println("Aqui está o conteudo do ficheiro que será enviado: ");
-        System.out.println(auxContent);
-
-
         out.writeObject ( responseObj );
         out.flush ( );
     }
 
+    private void setDividedMessage(boolean state){
+        dividedMessage=state;
+    }
+    public static boolean getDividedMessage(){
+        return dividedMessage;
+    }
+
+    public static void setDividedFinished(int times){
+        dividedFinished=times;
+    }
+    public static int getDividedFinished(){
+        return dividedFinished;
+    }
 }
