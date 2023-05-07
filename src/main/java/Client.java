@@ -16,7 +16,6 @@ import java.security.PublicKey;
  * streams enables the sender to send any kind of object.
  */
 public class Client {
-
    private static final String HOST = "0.0.0.0";
    private final Socket client;
    private final ObjectInputStream in;
@@ -30,6 +29,8 @@ public class Client {
    private int requestLimit;
    private String fileName;
     private PublicKey serverPublicRSAKey;
+    private KeyPair clientKeyPair;
+    private static final Scanner scan = new Scanner(System.in);
    /**
     * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
     * send a message.
@@ -40,26 +41,29 @@ public class Client {
     */
    public Client ( int port ) throws Exception {
       this.requestLimit = 0;
+
       client = new Socket ( HOST , port );
+
       out = new ObjectOutputStream ( client.getOutputStream ( ) );
+
       in = new ObjectInputStream ( client.getInputStream ( ) );
+
       isConnected = true; // TODO: Check if this is necessary or if it should be controlled
+
       // Create a temporary directory for putting the request files
+
       userDir = Files.createTempDirectory ( "fileServer" ).toFile ( ).getAbsolutePath ( );
+
       System.out.println ( "Temporary directory path " + userDir );
 
-       KeyPair clientKeyPair = RSA.generateKeyPair();
-       RSA.storeRSAKeys ( clientKeyPair,this.client_name);
+      System.out.println("\nInsert your username");
+      String name = scan.next();
+      this.client_name = name;
 
-       this.setPrivateKey();
-       this.setPublicKey();
+      RSA.storeRSAKeys ( RSA.generateKeyPair() , client_name);
 
-       serverPublicRSAKey = rsaKeyDistribution ( );
-
-   }
-   /*a*/
-   public boolean isConnected() {
-       return isConnected;
+      this.setPrivateKey();
+      this.setPublicKey();
    }
    public String getClientName() {
        return client_name;
@@ -67,40 +71,26 @@ public class Client {
    public void setClientName(String client_name){
        this.client_name = client_name;
    }
-   public void setPrivateKey() throws Exception{
-       this.privateKey = RSA.getPrivateKey(this.client_name);
-   }
-   public void setPublicKey() throws Exception{
-       this.publicKey = RSA.getPublicKey(this.client_name);
-   }
-
-   public PrivateKey getPrivateKey() throws Exception{
-       return this.privateKey;
-   }
-   public PublicKey getPublicKey() throws Exception{
-       return RSA.getPublicKey(this.client_name);
-   }
-    public void setFileName(String request){
+   public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
+   public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
+   public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
+   public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
+   public void setFileName(String request){
         this.fileName = request;
     }
-    public String getFileName(){
-        return this.fileName;
-    }
-    public void setConnected(boolean bool){
-       this.isConnected = bool;
-    }
-   public boolean reachedLimit() throws Exception {
-       requestLimit = getRequestLimit(); //Busca o número de requests guardados no ficheiroSystem.out.println(requestLimit);
-       if(requestLimit >= 5 ){
-           return true;
-       }else{
-           return false;
-       }
+   public String getFileName(){
+       return this.fileName;
    }
-   public int getRequestLimit() throws Exception{
-       return RequestUtils.requestLimit(this.client_name);
+   public void setConnected(boolean bool){
+      this.isConnected = bool;
    }
-
+   public void doHandshake() throws Exception {
+       serverPublicRSAKey = rsaKeyDistribution ( );
+       RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL);
+   }
+   public void endConnection() throws Exception {
+      this.closeConnection();
+   }
    /**
     * Reads the response from the server and writes the file to the temporary directory.
     *
@@ -191,7 +181,7 @@ public class Client {
             // Request the file
             sendMessage ( request );
             // Waits for the response
-            //processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
+            processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
         }
     }
 
