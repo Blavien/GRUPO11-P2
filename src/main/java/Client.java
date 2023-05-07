@@ -25,6 +25,7 @@ public class Client {
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
+    private static final String MAC_KEY = "Mas2142SS!±";
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -170,7 +171,7 @@ public class Client {
         // Encrypts the message
         byte[] encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         // Generates the MAC
-        byte[] digest = Integrity.generateDigest ( message.getBytes ( ) );
+        byte[] digest = Integrity.generateMAC ( message.getBytes ( ),MAC_KEY );
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message

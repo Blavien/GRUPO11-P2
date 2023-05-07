@@ -1,3 +1,5 @@
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
@@ -6,7 +8,7 @@ import java.util.Arrays;
  */
 public class Integrity {
 
-    private static final String DIGEST_ALGORITHM = "SHA-512";
+    private static final String MAC_ALGORITHM = "HmacSHA256";
 
     /**
      * Computes the message digest of the given message.
@@ -17,9 +19,11 @@ public class Integrity {
      *
      * @throws Exception if the message digest algorithm is not available
      */
-    public static byte[] generateDigest ( byte[] message ) throws Exception {
-        MessageDigest messageDigest = MessageDigest.getInstance ( DIGEST_ALGORITHM );
-        return messageDigest.digest ( message );
+    public static byte[] generateMAC ( byte[] message , String macKey ) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec ( macKey.getBytes ( ) , MAC_ALGORITHM );
+        Mac mac = Mac.getInstance ( MAC_ALGORITHM );
+        mac.init ( secretKeySpec );
+        return mac.doFinal ( message );
     }
 
     /**
@@ -30,8 +34,8 @@ public class Integrity {
      *
      * @return true if the message digest is valid, false otherwise
      */
-    public static boolean verifyDigest ( byte[] digest , byte[] computedDigest ) {
-        return Arrays.equals ( digest , computedDigest );
+    public static boolean verifyMAC ( byte[] mac , byte[] computedMac ) {
+        return Arrays.equals ( mac , computedMac );
     }
 
 }

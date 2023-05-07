@@ -19,6 +19,7 @@ import java.util.Map;
 public class Server implements Runnable {
     public static final String FILE_PATH = "server/files";
     public static final String server_name = "Server_G11";
+    private static final String MAC_KEY = "Mas2142SS!±";
     private final ServerSocket server;
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
@@ -72,9 +73,9 @@ public class Server implements Runnable {
         // Extracts and decrypt the message
         byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret.toByteArray ( ) );
         // Computes the digest of the received message
-        byte[] computedDigest = Integrity.generateDigest ( decryptedMessage );
+        byte[] computedDigest = Integrity.generateMAC ( decryptedMessage,MAC_KEY );
         // Verifies the integrity of the message
-        if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+        if ( ! Integrity.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );
         }
         System.out.println ( new String ( decryptedMessage ) );
