@@ -73,4 +73,15 @@ public class RSA {
         pubOOS.writeObject(keyPair.getPublic());
         pubOOS.close();
     }
+    public static void writeDecryptedFile(String client_name,String nomeFicheiro) throws Exception{
+        String privateKeyFolder = client_name + "/files";
+        File privateUserKey = new File(privateKeyFolder);
+        privateUserKey.mkdirs();
+
+
+        File arquivo = new File(client_name + "/files/ficheiroFinalhahaha.txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+        bw.write(nomeFicheiro);
+        bw.close();
+    }
 }

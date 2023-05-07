@@ -96,6 +96,8 @@ public class Server implements Runnable {
         if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );
         }
+        System.out.println("Aqui está o conteudo do request desencriptado ");
+        System.out.println(new String(decryptedMessage));
         return decryptedMessage;
     }
     /**
@@ -170,11 +172,35 @@ public class Server implements Runnable {
         RequestUtils.registerRequests (requestSplit);
         // Reads the file and sends it to the client
         byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
+        String auxContent = new String(content);
+        System.out.println("Aqui está o conteudo do ficheiro que será enviado: ");
+        System.out.println(auxContent);
+
+
+
+
+
         sendFile ( content );
     }
-    private void sendFile ( byte[] content ) throws IOException {
-        Message response = new Message ( content );
-        out.writeObject ( response );
+    private void sendFile ( byte[] content ) throws Exception {
+
+
+        // Agree on a shared secret
+        BigInteger sharedSecret = agreeOnSharedSecret ( clientPublicRSAKey );
+        // Encrypts the message
+        byte[] encryptedResponse = AES.encrypt ( content, sharedSecret.toByteArray ( ) );
+        // Generates the MAC
+        byte[] digest = Integrity.generateDigest ( content);
+        // Creates the message object
+        Message responseObj = new Message ( encryptedResponse , digest );
+        // Sends the encrypted message
+
+        String auxContent = new String(content);
+        System.out.println("Aqui está o conteudo do ficheiro que será enviado: ");
+        System.out.println(auxContent);
+
+
+        out.writeObject ( responseObj );
         out.flush ( );
     }
 

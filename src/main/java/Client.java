@@ -1,7 +1,5 @@
 import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -10,6 +8,9 @@ import java.util.Scanner;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.nio.ByteBuffer;
+import java.security.*;
+import java.io.*;
 
 /**
  * This class represents the client. The client sends the messages to the server by means of a socket. The use of Object
@@ -105,11 +106,34 @@ public class Client {
     *
     * @param fileName the name of the file to write
     */
-   private void processResponse ( String fileName ) {
+   private void processResponse ( String fileName ) throws Exception {
        try {
+           BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
            Message response = ( Message ) in.readObject ( );
+           byte[] decryptedFile = AES.decrypt ( response.getMessage ( ) , sharedSecret.toByteArray ( ) );
+           byte[] computedDigest = Integrity.generateDigest ( decryptedFile );
+
+           if ( ! Integrity.verifyDigest ( response.getSignature ( ) , computedDigest ) ) {
+               throw new RuntimeException ( "The integrity of the message is not verified" );
+           }
+           String decryptedFileString = new String(decryptedFile);
            System.out.println ( "File received" );
-           //FileHandler.writeFile ( userDir + "/" +  this.getFileName() , response.getMessage ( ) );
+           System.out.println ( "Conteúdo do ficheiro recebido: " );
+           System.out.println (decryptedFileString);
+
+
+            //Criação da pasta que receberá os ficheiros
+           String privateClientPath = this.client_name + "/files";
+           File privateClientFolder = new File(privateClientPath);
+           privateClientFolder.mkdirs();
+
+           //Criação do ficheiro de texto que receberá o conteúdo do ficheiro de texto pedido e a escrita do mesmo
+           File arquivo = new File(this.client_name + "/files/User_" +this.getFileName() );
+           BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+           bw.write(decryptedFileString);
+           bw.close();
+
+           //FileHandler.writeFile ( decryptedFileString.getBytes() );
        } catch ( IOException | ClassNotFoundException e ) {
            e.printStackTrace ( );
        }
@@ -192,6 +216,8 @@ public class Client {
             String request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
             this.setFileName(RequestUtils.splitRequest(request).get(1));
             // Request the file
+            System.out.println("Aqui está o conteudo do request q será enviado ");
+            System.out.println(request);
             sendMessage ( request );
             // Waits for the response
             processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
