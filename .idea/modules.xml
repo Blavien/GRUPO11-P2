@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/GRUPO11-P2.iml" filepath="$PROJECT_DIR$/.idea/GRUPO11-P2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/text-file-server.iml" filepath="$PROJECT_DIR$/text-file-server.iml" />
     </modules>
   </component>
 </project>
