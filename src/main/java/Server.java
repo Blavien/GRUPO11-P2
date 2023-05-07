@@ -42,73 +42,34 @@ public class Server implements Runnable {
         this.publicRSAKey = keyPair.getPublic();
         RSA.storeRSAKeys(keyPair,server_name);
     }
+    public static PrivateKey getPrivateRSAKey() throws Exception {
+        return RSA.getPrivateKey(server_name);
+    }
+    public static PublicKey getPublicRSAKey() throws Exception {
+        return RSA.getPublicKey(server_name);
+    }
     @Override
     public void run ( ) {
         try {
             while ( isConnected ) {
                 Socket client = server.accept ( );
-                in = new ObjectInputStream( client.getInputStream ( ) );
-                out = new ObjectOutputStream( client.getOutputStream ( ) );
-                // Perform key distribution
-                PublicKey clientPublicRSAKey = rsaKeyDistribution ( in );
+
+                System.out.println("\nSERVER : New client connection.");
                 // Process the request
-                process ( in , clientPublicRSAKey );
-                // Close connection
-                //Atribui as chaves criadass pelo RSA a estas vars
-                // Process the request
-                process ( client );
+                process ( client);
             }
             closeConnection ( );
         } catch ( Exception e ) {
             throw new RuntimeException ( e );
         }
     }
-
-    private void process ( ObjectInputStream in , PublicKey senderPublicRSAKey ) throws Exception {
-        // Agree on a shared secret
-        BigInteger sharedSecret = agreeOnSharedSecret ( senderPublicRSAKey );
-        // Reads the message object
-        Message messageObj = ( Message ) in.readObject ( );
-        // Extracts and decrypt the message
-        byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret.toByteArray ( ) );
-        System.out.println(decryptedMessage.toString());
-        // Computes the digest of the received message
-        byte[] computedDigest = Integrity.generateDigest ( decryptedMessage );
-        // Verifies the integrity of the message
-        if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
-            throw new RuntimeException ( "The integrity of the message is not verified" );
-        }
-        System.out.println ( new String ( decryptedMessage ) );
-    }
-
-    /**
-     * Performs the Diffie-Hellman algorithm to agree on a shared private key.
-     *
-     * @param senderPublicRSAKey the public key of the sender
-     *
-     * @return the shared secret key
-     *
-     * @throws Exception when the key agreement protocol fails
-     */
-    private BigInteger agreeOnSharedSecret ( PublicKey senderPublicRSAKey ) throws Exception {
-        // Generate a pair of keys
-        BigInteger privateKey = DiffieHellman.generatePrivateKey ( );
-        BigInteger publicKey = DiffieHellman.generatePublicKey ( privateKey );
-        // Extracts the public key from the request
-        BigInteger clientPublicKey = new BigInteger ( RSA.decryptRSA ( ( byte[] ) in.readObject ( ) , senderPublicRSAKey ) );
-        // Send the public key to the client
-        sendPublicDHKey ( publicKey );
-        // Generates the shared secret
-        return DiffieHellman.computePrivateKey ( clientPublicKey , privateKey );
-    }
-
     /**
      * Processes the request from the client.
      *
      * @throws IOException if an I/O error occurs when reading stream header
      */
-    private void process ( Socket client ) throws IOException {
-        ClientHandler clientHandler = new ClientHandler ( client );
+    private void process ( Socket client) throws Exception {
+        ClientHandler clientHandler = new ClientHandler ( client);
         clientHandler.start ( );
     }
 
@@ -123,21 +84,6 @@ public class Server implements Runnable {
         }
     }
 
-    private PublicKey rsaKeyDistribution ( ObjectInputStream in ) throws Exception {
-        // Extract the public key
-        PublicKey senderPublicRSAKey = ( PublicKey ) in.readObject ( );
-        // Send the public key
-        sendPublicRSAKey ( );
-        return senderPublicRSAKey;
-    }
-    private void sendPublicRSAKey ( ) throws IOException {
-        out.writeObject ( publicRSAKey );
-        out.flush ( );
-    }
-
-    private void sendPublicDHKey ( BigInteger publicKey ) throws Exception {
-        out.writeObject ( RSA.encryptRSA ( publicKey.toByteArray ( ) , this.privateRSAKey ) );
-    }
 
 
 }
