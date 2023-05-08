@@ -1,3 +1,5 @@
+import javax.crypto.SecretKey;
+import javax.print.DocFlavor;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,8 +25,11 @@ public class Server implements Runnable {
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
     private final PublicKey publicRSAKey;
+
+
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private int port;
 
     /**
      * Constructs a Server object by specifying the port number. The server will be then created on the specified port.
@@ -85,5 +90,11 @@ public class Server implements Runnable {
     }
 
 
+    public int getPort() {
+        return port;
+    }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
 }
