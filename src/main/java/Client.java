@@ -23,13 +23,14 @@ public class Client {
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    private SecretKey macKey;
+    private final SecretKey macKey;
     private int requestLimit;
     private String fileName;
     private PublicKey serverPublicRSAKey;
     private KeyPair clientKeyPair;
     private static final Scanner scan = new Scanner(System.in);
     private BigInteger sharedSecret;
+
 
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
@@ -63,6 +64,8 @@ public class Client {
 
         this.setPrivateKey();
         this.setPublicKey();
+        macKey=MAC.createMACKey();
+
     }
     public String getClientName() {
         return client_name;
@@ -110,9 +113,9 @@ public class Client {
 
         byte[] decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
 
-        byte[] computedDigest = Integrity.generateDigest(decryptedFile);
+        byte[] computedDigest = Integrity.generateMAC(decryptedFile, String.valueOf(macKey));
 
-        if (!Integrity.verifyDigest(response.getSignature(), computedDigest)) {
+        if (!Integrity.verifyMAC(response.getSignature(), computedDigest)) {
             throw new RuntimeException("The integrity of the message is not verified");
         }
 
@@ -134,9 +137,9 @@ public class Client {
 
                 System.out.println(new String (decryptedFile));
 
-                computedDigest = Integrity.generateDigest(decryptedFile);
+                computedDigest = Integrity.generateMAC(decryptedFile, String.valueOf(macKey));
 
-                if (!Integrity.verifyDigest(response.getSignature(), computedDigest)) {
+                if (!Integrity.verifyMAC(response.getSignature(), computedDigest)) {
                     throw new RuntimeException("The integrity of the message is not verified");
                 }
 
@@ -200,7 +203,7 @@ public class Client {
         // Encrypts the message
         byte[] encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         // Generates the MAC
-        byte[] digest = Integrity.generateDigest ( message.getBytes ( ) );
+        byte[] digest = Integrity.generateMAC ( message.getBytes ( ), String.valueOf(macKey));
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message

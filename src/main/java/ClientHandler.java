@@ -21,6 +21,8 @@ public class ClientHandler extends Thread {
     private static boolean dividedMessage;
     private static int dividedFinished;
 
+    private final String MAC_KEY="Mas2142SS!±";
+
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
      * done in a separate thread.
@@ -86,7 +88,7 @@ public class ClientHandler extends Thread {
                     if(contentSize>2048) {
                         //setDividedMessage(true);
                         sendFile("INICIO".getBytes(), sharedSecret.toByteArray ());
-                        ArrayList<byte[]> contentDividido = ByteUtils.splitByteArray(auxContent.getBytes(),numParts );
+                        ArrayList<byte[]> contentDividido = ByteUtils.splitByteArray(auxContent.getBytes(),2048 );
 
                         for (int j = 0; j < contentDividido.size(); j++) {
 
@@ -173,7 +175,7 @@ public class ClientHandler extends Thread {
         // Encrypts the message
         byte[] encryptedResponse = AES.encrypt ( content , sharedSecret );
         // Generates the MAC
-        byte[] digest = Integrity.generateDigest ( content );
+        byte[] digest = Integrity.generateMAC ( content,MAC_KEY );
         // Creates the message object
         Message responseObj = new Message ( encryptedResponse , digest );
         // Sends the encrypted message
@@ -237,9 +239,9 @@ public class ClientHandler extends Thread {
         // Extracts and decrypt the message
         byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
         // Computes the digest of the received message
-        byte[] computedDigest = Integrity.generateDigest ( decryptedMessage );
+        byte[] computedDigest = Integrity.generateMAC ( decryptedMessage,MAC_KEY );
         // Verifies the integrity of the message
-        if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+        if ( ! Integrity.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );
         }
         return decryptedMessage;
