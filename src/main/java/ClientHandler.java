@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,10 +20,10 @@ public class ClientHandler extends Thread {
 
     private final String MAC_KEY="Mas2142SS!±";
     private byte[] message;
+    private static boolean dividedMessage;
+    private static int dividedFinished;
 
-
-    // Initialize HashMap to keep track of request counts for each client
-    private HashMap<String, PublicKey> handshakeReg;
+    private final String MAC_KEY="Mas2142SS!±";
 
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
@@ -33,11 +32,14 @@ public class ClientHandler extends Thread {
      * @throws IOException when an I/O error occurs when creating the socket
      */
     public ClientHandler (Socket client) throws Exception {
-        this.handshakeReg = new HashMap<>();
         this.client = client;
         in = new ObjectInputStream ( this.client.getInputStream ( ) );
         out = new ObjectOutputStream ( this.client.getOutputStream ( ) );
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
+        dividedMessage = false;
+        dividedFinished = 0;
+
+
     }
 
     @Override
@@ -50,6 +52,7 @@ public class ClientHandler extends Thread {
             while(RequestUtils.readNumberFromFile(RequestUtils.HANDSHAKE_SIGNAL) != 1){ }
 
             clientPublicRSAKey = rsaKeyDistribution ( in );
+            BigInteger sharedSecret = agreeOnSharedSecret ( clientPublicRSAKey );
 
             int i = 0;
 
@@ -57,7 +60,7 @@ public class ClientHandler extends Thread {
 
             while ( i != 5) {
 
-                byte[] message = process (in , clientPublicRSAKey );
+                byte[] message = process ( in , sharedSecret.toByteArray ( ) );
 
                 if(message != null ){
                     System.out.println("\n***** REQUEST *****\n"+ new String(message));
@@ -74,13 +77,41 @@ public class ClientHandler extends Thread {
 
                     byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
 
-                    sendFile ( content );
+                    String auxContent = new String(content);
+                    System.out.println("Aqui está o conteudo do ficheiro que será enviado: ");
+                    System.out.println(auxContent);
 
+
+
+                    int contentSize = content.length;
+                    int numParts = (int) Math.ceil((double) contentSize / 2048);
+                    //setDividedFinished(numParts);
+
+                    if(contentSize>2048) {
+                        //setDividedMessage(true);
+                        sendFile("INICIO".getBytes(), sharedSecret.toByteArray ());
+                        ArrayList<byte[]> contentDividido = ByteUtils.splitByteArray(auxContent.getBytes(),2048 );
+
+                        for (int j = 0; j < contentDividido.size(); j++) {
+
+                            sendFile(contentDividido.get(j), sharedSecret.toByteArray ());
+                            String ola = new String(contentDividido.get(j));
+                            System.out.println(ola);
+                            System.out.println("Fim de uma mensagem.");
+
+                        }
+
+                        sendFile("FIM".getBytes(), sharedSecret.toByteArray ());
+                    }
+                    else {
+
+                        sendFile(content, sharedSecret.toByteArray ());
+
+                    }
                     i = RequestUtils.requestLimit(requestSplit.get(0));
 
                     System.out.println(requestSplit.get(0)+" - Request counter: "+i);
-                }else{
-                    break;
+
                 }
             }
             if(i >= 5){
@@ -105,7 +136,36 @@ public class ClientHandler extends Thread {
 
         }
 
+
     }
+
+    public static List<String> splitStringBySize(String input) {
+        List<String> output = new ArrayList<>();
+
+        // Verifica o tamanho da string em bytes
+        int inputSize = input.getBytes().length;
+
+        if (inputSize <= 2048) { // Se o tamanho for menor ou igual a 2KB, adiciona a string inteira na lista de saída
+            output.add(input);
+        } else { // Caso contrário, divide a string em pedaços de no máximo 2KB
+            int numParts = (int) Math.ceil((double) inputSize / 2048); // Calcula o número de pedaços necessários
+            int remainingBytes = inputSize;
+            int start = 0;
+            int end = 0;
+
+            for (int i = 0; i < numParts; i++) {
+                end += (remainingBytes > 2048) ? 2048 : remainingBytes; // Define o final do pedaço, garantindo que não ultrapasse 2KB
+                String part = input.substring(start, end); // Extrai o pedaço da string original
+                output.add(part); // Adiciona o pedaço na lista de saída
+                start = end;
+                remainingBytes = inputSize - end;
+            }
+        }
+
+        return output;
+    }
+
+
     /**
      * Sends the file to the client
      *
@@ -113,10 +173,15 @@ public class ClientHandler extends Thread {
      *
      * @throws IOException when an I/O error occurs when sending the file
      */
-    private void sendFile ( byte[] content) throws Exception {
-        Message response = new Message ( content );
-
-        out.writeObject ( response);
+    private void sendFile ( byte[] content , byte[] sharedSecret ) throws Exception {
+        // Encrypts the message
+        byte[] encryptedResponse = AES.encrypt ( content , sharedSecret );
+        // Generates the MAC
+        byte[] digest = Integrity.generateMAC ( content,MAC_KEY );
+        // Creates the message object
+        Message responseObj = new Message ( encryptedResponse , digest );
+        // Sends the encrypted message
+        out.writeObject ( responseObj );
         out.flush ( );
     }
 
@@ -170,13 +235,11 @@ public class ClientHandler extends Thread {
         return DiffieHellman.computePrivateKey ( clientPublicKey , privateKey );
     }
 
-    private byte[] process ( ObjectInputStream in , PublicKey senderPublicRSAKey ) throws Exception {
-        // Agree on a shared secret
-        BigInteger sharedSecret = agreeOnSharedSecret ( senderPublicRSAKey );
+    private byte[] process ( ObjectInputStream in , byte[] sharedSecret ) throws Exception {
         // Reads the message object
         Message messageObj = ( Message ) in.readObject ( );
         // Extracts and decrypt the message
-        byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret.toByteArray ( ) );
+        byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
         // Computes the digest of the received message
         byte[] computedDigest = Integrity.generateMAC ( decryptedMessage,MAC_KEY );
         // Verifies the integrity of the message
