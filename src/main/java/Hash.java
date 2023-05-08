@@ -6,8 +6,6 @@ import java.util.Arrays;
  */
 public class Hash {
 
-    private static final String DIGEST_ALGORITHM = "SHA-512";
-
     /**
      * Computes the message digest of the given message.
      *
@@ -17,7 +15,7 @@ public class Hash {
      *
      * @throws Exception if the message digest algorithm is not available
      */
-    public static byte[] generateDigest ( byte[] message ) throws Exception {
+    public static byte[] generateDigest ( byte[] message, String DIGEST_ALGORITHM) throws Exception {
         MessageDigest messageDigest = MessageDigest.getInstance ( DIGEST_ALGORITHM );
         return messageDigest.digest ( message );
     }
