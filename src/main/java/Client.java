@@ -119,8 +119,8 @@ public class Client {
         System.out.println("\nEncryption/Decryption algoritm:");
         System.out.println("0. AES");
         System.out.println("1. DES");
-        System.out.println("2. 360-no-scope-DES");
-        System.out.println("3. CBC");
+        System.out.println("2. 3DES");
+        System.out.println("3. 360-no-scope-DES");
         i = scan.nextInt();
         switch (i){
             case 0:
@@ -130,7 +130,7 @@ public class Client {
                 choice.add(1); // [1] = 1
                 break;
             case 2:
-                invalid_choice_encryption = true;
+                choice.add(2); // [1] = 2
                 break;
             case 3:
                 invalid_choice_encryption = true;
@@ -178,9 +178,12 @@ public class Client {
         //CRYPTO
         if(choice.get(1) == 0) {
             decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-        }else if(choice.get(1) == 1){
+        }
+        if(choice.get(1) == 1){
             decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-
+        }
+        if(choice.get(1) == 2){
+            decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
         }
         //HASHING
         byte[] computedDigest = null;
@@ -208,9 +211,12 @@ public class Client {
                 //CRYPTO
                 if(choice.get(1) == 0) {
                     decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-                }else if(choice.get(1) == 1){
+                }
+                if(choice.get(1) == 1){
                     decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-
+                }
+                if(choice.get(1) == 2){
+                    decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
                 }
                 //HASHING
                 if(choice.get(0) == 0) {
@@ -304,6 +310,10 @@ public class Client {
         if(choice.get(1) == 1){ //DES
             encryptedMessage = DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         }
+        if(choice.get(1) == 2){
+            encryptedMessage = DES3.encrypt(message.getBytes(), sharedSecret.toByteArray());
+        }
+
         byte[] digest = null;
 
         if(choice.get(0) == 0){ //MAC
