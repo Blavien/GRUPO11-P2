@@ -9,7 +9,7 @@ public class MainClient {
         boolean mainAlive = true;
         while (mainAlive){
             boolean subAlive = true;
-
+            boolean handshakeInsuccess = false;
             System.out.println("\n*************** Welcome to GROUP 11 ******************************\n");
             System.out.println("1. Start a new session");
             System.out.println("2. Go back to a previous session");
@@ -34,18 +34,23 @@ public class MainClient {
 
                         clients.add(client);
 
-
                         RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 0 - Nothing
-
-                        RequestUtils.newClientRegister(client.getClientName()); //Register new clients
 
                         if(RequestUtils.requestLimit(client.getClientName()) == 0){   //Request counter do client == 0  - novo ou requests levou reset
 
                             RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
 
-                            client.doHandshake();
-
+                            handshakeInsuccess = client.doHandshake();
                         }
+
+                        if(handshakeInsuccess == true){
+                            System.out.println("\nYou have choosen POORLY, so go do a new session.");
+                            clients.remove(client);
+                            break;
+                        }
+
+                        RequestUtils.newClientRegister(client.getClientName()); //Fica registado se o hadnshake foi um sucesso
+
                         RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
                         while (subAlive == true){
 
@@ -58,9 +63,9 @@ public class MainClient {
                             }
 
                             System.out.println("\n*************** USER : "+client.getClientName()+" *******************");
-                            System.out.println("\n"+RequestUtils.requestLimit(client.getClientName())+"\n");
-                            System.out.println("\n1. Request file");
-                            System.out.println("2.Go to main menu");
+                            System.out.println("Requests: "+RequestUtils.requestLimit(client.getClientName())+"\n");
+                            System.out.println("1. Request file");
+                            System.out.println("2. Go to main menu");
                             int req = in.nextInt();
 
                             switch (req){

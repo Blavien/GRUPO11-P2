@@ -1,2 +1,2 @@
-AAAEAEA : 0
-RAEAEA : 0
+Sara : 1
+Stere : 1

@@ -6,12 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="GRUPO11-P2" />
+        <module name="text-file-server" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="GRUPO11-P2" target="17" />
-      <module name="text-file-server" target="17" />
-    </bytecodeTargetLevel>
   </component>
 </project>
