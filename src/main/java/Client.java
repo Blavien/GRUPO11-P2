@@ -227,7 +227,10 @@ public class Client {
 
                 decryptedContent = new String(decryptedFile);
 
-                unitedMessage +=new String(decryptedFile);
+                if(!decryptedContent.equals("FIM")) {
+                    unitedMessage += new String(decryptedFile);
+                }
+
             }
             System.out.println("We have reached the end of the file content.");
 
@@ -238,7 +241,9 @@ public class Client {
             saveFiles(unitedMessage);
 
         }else{
-            saveFiles(new String(decryptedFile));
+            if(!decryptedContent.equals("FIM")) {
+                saveFiles(new String(decryptedFile));
+            }
         }
     }
 
