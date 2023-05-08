@@ -20,6 +20,7 @@ public class ClientHandler extends Thread {
     private SecretKey clientMACKey;
     private ArrayList<Integer> clientChoice;
 
+    private static String completo;
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
      * done in a separate thread.
@@ -273,6 +274,7 @@ public class ClientHandler extends Thread {
         // Reads the message object
         Message messageObj = ( Message ) in.readObject ( );
         // Extracts and decrypt the message
+
         byte[] decryptedMessage = null;
         if(clientChoice.get(1) == 0){
             decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
@@ -299,7 +301,14 @@ public class ClientHandler extends Thread {
             }
         }
         // Verifies the integrity of the message
-
+        setMessageTest(decryptedMessage);
         return decryptedMessage;
+    }
+    private void setMessageTest(byte[] ola){
+        completo = new String(ola);
+
+    }
+    public static String getMessageTest(){
+        return completo;
     }
 }

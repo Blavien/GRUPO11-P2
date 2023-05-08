@@ -18,7 +18,7 @@ public class MainClient {
             switch(input){
                 case 1:
                     boolean clientAlreadyExists = false;
-                    Client client = new Client ( 8000 );
+                    Client client = new Client ( 8000 ,false);
                     String name = client.getClientName();
 
                     //Checks f client is already registered on the Registry.txt
