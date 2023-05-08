@@ -20,6 +20,7 @@ public class Client {
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
     private boolean isConnected;
+
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -340,6 +341,15 @@ public class Client {
             // Waits for the response
             processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
         }
+    }
+
+
+    public String getClient_name() {
+        return client_name;
+    }
+
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
     }
 
 
