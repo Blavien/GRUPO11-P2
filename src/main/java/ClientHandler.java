@@ -1,3 +1,4 @@
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,11 +18,7 @@ public class ClientHandler extends Thread {
     private final Socket client;
     private final boolean isConnected;
     private ArrayList<String> requestSplit;
-
-    private final String MAC_KEY="Mas2142SS!±";
-    private byte[] message;
-    private static boolean dividedMessage;
-    private static int dividedFinished;
+    private SecretKey clientMACKey;
 
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
@@ -34,10 +31,6 @@ public class ClientHandler extends Thread {
         in = new ObjectInputStream ( this.client.getInputStream ( ) );
         out = new ObjectOutputStream ( this.client.getOutputStream ( ) );
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
-        dividedMessage = false;
-        dividedFinished = 0;
-
-
     }
 
     @Override
@@ -47,15 +40,15 @@ public class ClientHandler extends Thread {
             sleep(2000);
             PublicKey clientPublicRSAKey = null;
 
-            while(RequestUtils.readNumberFromFile(RequestUtils.HANDSHAKE_SIGNAL) != 1){ }
+            while(RequestUtils.readNumberFromFile(RequestUtils.HANDSHAKE_SIGNAL) != 1){  }
 
             clientPublicRSAKey = rsaKeyDistribution ( in );
             BigInteger sharedSecret = agreeOnSharedSecret ( clientPublicRSAKey );
+            System.out.println("SERVER : Handshake was a sucess.");
+            clientMACKey = receiveMacKey();
+            System.out.println("SERVER : MACK Key received.");
 
             int i = 0;
-
-            System.out.println("SERVER : Handshake was a sucess.");
-
             while ( i != 5) {
 
                 byte[] message = process ( in , sharedSecret.toByteArray ( ) );
@@ -76,29 +69,24 @@ public class ClientHandler extends Thread {
                     byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
 
                     String auxContent = new String(content);
-                    System.out.println("Aqui está o conteudo do ficheiro que será enviado: ");
+                    System.out.println("\n***** FILE ********\nHere's the file content: ");
                     System.out.println(auxContent);
 
-
-
                     int contentSize = content.length;
-                    int numParts = (int) Math.ceil((double) contentSize / 2048);
-                    //setDividedFinished(numParts);
+                    //int numParts = (int) Math.ceil((double) contentSize / 2048);
 
                     if(contentSize>2048) {
-                        //setDividedMessage(true);
+
                         sendFile("INICIO".getBytes(), sharedSecret.toByteArray ());
+
                         ArrayList<byte[]> contentDividido = ByteUtils.splitByteArray(auxContent.getBytes(),2048 );
 
                         for (int j = 0; j < contentDividido.size(); j++) {
 
                             sendFile(contentDividido.get(j), sharedSecret.toByteArray ());
-                            String ola = new String(contentDividido.get(j));
-                            System.out.println(ola);
-                            System.out.println("Fim de uma mensagem.");
+                            System.out.println(new String(contentDividido.get(j)));
 
                         }
-
                         sendFile("FIM".getBytes(), sharedSecret.toByteArray ());
                     }
                     else {
@@ -108,17 +96,17 @@ public class ClientHandler extends Thread {
                     }
                     i = RequestUtils.requestLimit(requestSplit.get(0));
 
-                    System.out.println(requestSplit.get(0)+" - Request counter: "+i);
+                    //System.out.println(requestSplit.get(0)+" - Request counter: "+i);
 
                 }
             }
             if(i >= 5){
 
-                System.out.println("\n Client exceeded the max requests.");
+                System.out.println("\nClient "+requestSplit.get(0) +" exceeded the max requests.");
 
                 RequestUtils.resetRequestCounter(requestSplit.get(0));
 
-                System.out.println("Client's request counter has been reset to 0.");
+                System.out.println("Client "+requestSplit.get(0) +" request counter has been reset to 0.");
             }
 
             System.out.println("Closing socket connection.");
@@ -133,10 +121,11 @@ public class ClientHandler extends Thread {
             throw new RuntimeException(e);
 
         }
-
-
     }
-
+    private SecretKey receiveMacKey() throws IOException, ClassNotFoundException {
+        SecretKey macKey = ( SecretKey ) in.readObject ( );
+        return macKey;
+    }
     public static List<String> splitStringBySize(String input) {
         List<String> output = new ArrayList<>();
 
@@ -175,7 +164,7 @@ public class ClientHandler extends Thread {
         // Encrypts the message
         byte[] encryptedResponse = AES.encrypt ( content , sharedSecret );
         // Generates the MAC
-        byte[] digest = Integrity.generateMAC ( content,MAC_KEY );
+        byte[] digest = MAC.generateMAC ( content, clientMACKey );
         // Creates the message object
         Message responseObj = new Message ( encryptedResponse , digest );
         // Sends the encrypted message
@@ -239,7 +228,7 @@ public class ClientHandler extends Thread {
         // Extracts and decrypt the message
         byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
         // Computes the digest of the received message
-        byte[] computedDigest = Integrity.generateMAC ( decryptedMessage,MAC_KEY );
+        byte[] computedDigest = MAC.generateMAC ( decryptedMessage,clientMACKey );
         // Verifies the integrity of the message
         if ( ! Integrity.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );

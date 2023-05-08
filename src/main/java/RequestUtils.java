@@ -193,7 +193,9 @@ public class RequestUtils {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line = reader.readLine();
             return Integer.parseInt(line.trim());
-
+        } catch (Exception e) {
+            System.err.println("RequestUtils: Error reading value" + e.getMessage());
+            return 0; // or any other default value
         }
     }
 }
