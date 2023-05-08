@@ -19,6 +19,7 @@ public class ClientHandler extends Thread {
     private final boolean isConnected;
     private ArrayList<String> requestSplit;
     private SecretKey clientMACKey;
+    private ArrayList<Integer> clientChoice;
 
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
@@ -45,8 +46,16 @@ public class ClientHandler extends Thread {
             clientPublicRSAKey = rsaKeyDistribution ( in );
             BigInteger sharedSecret = agreeOnSharedSecret ( clientPublicRSAKey );
             System.out.println("SERVER : Handshake was a sucess.");
-            clientMACKey = receiveMacKey();
-            System.out.println("SERVER : MACK Key received.");
+
+
+            clientChoice = receiveClientChoice();
+            System.out.println("SERVER : Received the client's alorithms choice.");
+            printClientChoice(clientChoice);
+
+            if(clientChoice.get(0) == 0){
+                clientMACKey = receiveMacKey();
+                System.out.println("SERVER : MACK Key received.");
+            }
 
             int i = 0;
             while ( i != 5) {
@@ -122,9 +131,23 @@ public class ClientHandler extends Thread {
 
         }
     }
-    private SecretKey receiveMacKey() throws IOException, ClassNotFoundException {
-        SecretKey macKey = ( SecretKey ) in.readObject ( );
-        return macKey;
+    public void printClientChoice(ArrayList<Integer> clientChoice){
+        if(clientChoice.get(0) == 0){
+            System.out.print("[ MAC , ");
+            if(clientChoice.get(1) == 0){
+                System.out.print(" AES ]");
+            } else if (clientChoice.get(1) == 1) {
+                System.out.print(" 3DES ]");
+            }
+        }else if (clientChoice.get(0) == 1){
+            System.out.print("[ HASH , ");
+            if(clientChoice.get(1) == 0){
+                System.out.print(" AES ]");
+            } else if (clientChoice.get(1) == 1) {
+                System.out.print(" 3DES ]");
+            }
+        }
+        System.out.println("\n");
     }
     public static List<String> splitStringBySize(String input) {
         List<String> output = new ArrayList<>();
@@ -184,7 +207,14 @@ public class ClientHandler extends Thread {
             throw new RuntimeException ( e );
         }
     }
-
+    private SecretKey receiveMacKey() throws IOException, ClassNotFoundException {
+        SecretKey macKey = ( SecretKey ) in.readObject ( );
+        return macKey;
+    }
+    private ArrayList<Integer> receiveClientChoice () throws IOException, ClassNotFoundException {
+        ArrayList<Integer> choice = (ArrayList<Integer>) in.readObject();
+        return choice;
+    }
     //DIFFIE HELLLMAN
     private PublicKey rsaKeyDistribution (ObjectInputStream in ) throws Exception {
         // Extract the public key
@@ -230,10 +260,9 @@ public class ClientHandler extends Thread {
         // Computes the digest of the received message
         byte[] computedDigest = MAC.generateMAC ( decryptedMessage,clientMACKey );
         // Verifies the integrity of the message
-        if ( ! Integrity.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
+        if ( ! MAC.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );
         }
         return decryptedMessage;
     }
-
 }
