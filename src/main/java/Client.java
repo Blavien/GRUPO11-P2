@@ -93,7 +93,7 @@ public class Client {
     public void doHandshake() throws Exception {
         serverPublicRSAKey = rsaKeyDistribution();
         sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
-
+        macKey=MAC.createMACKey();
         choice = new ArrayList<Integer>(); //Array novo sempre que isto é chamado
 
         System.out.println("\nWe will make you choose the security you want, cause I want 20.");
@@ -106,7 +106,6 @@ public class Client {
         switch (i){
             case 0:
                 System.out.println("choose mac");
-                macKey=MAC.createMACKey();
                 choice.add(0); // [0] = 0
                 break;
             case 1:
@@ -156,13 +155,26 @@ public class Client {
         //BigInteger sharedSecret = agreeOnSharedSecret(serverPublicRSAKey);
 
         Message response = (Message) in.readObject();
+        byte[] decryptedFile = null;
+        //CRYPTO
+        if(choice.get(1) == 0) {
+            decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+        }else if(choice.get(1) == 1){
+            //decryptedFile = 3DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
 
-        byte[] decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-
-        byte[] computedDigest = MAC.generateMAC(decryptedFile, macKey);
-
-        if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
-            throw new RuntimeException("The integrity of the message is not verified");
+        }
+        //HASHING
+        byte[] computedDigest = null;
+        if(choice.get(0) == 0) {
+            computedDigest = MAC.generateMAC(decryptedFile, macKey);
+            if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
+                throw new RuntimeException("The integrity of the message is not verified");
+            }
+        }else if(choice.get(0) == 1){
+            computedDigest = Hash.generateDigest(decryptedFile);
+            if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
+                throw new RuntimeException("The integrity of the message is not verified");
+            }
         }
 
         String decryptedContent = new String(decryptedFile);  // To handle divided content
@@ -174,17 +186,24 @@ public class Client {
             while (!decryptedContent.equals("FIM")){ //Decrypts the rest of the message until we get the last message - FIM
 
                 response = (Message) in.readObject();
+                //CRYPTO
+                if(choice.get(1) == 0) {
+                    decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                }else if(choice.get(1) == 1){
+                    //decryptedFile = 3DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
 
-                System.out.println(response);
-
-                decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-
-                //System.out.println(new String (decryptedFile));
-
-                computedDigest = MAC.generateMAC(decryptedFile, macKey);
-
-                if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
-                    throw new RuntimeException("The integrity of the message is not verified");
+                }
+                //HASHING
+                if(choice.get(0) == 0) {
+                    computedDigest = MAC.generateMAC(decryptedFile, macKey);
+                    if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
+                        throw new RuntimeException("The integrity of the message is not verified");
+                    }
+                }else if(choice.get(0) == 1){
+                    computedDigest = Hash.generateDigest(decryptedFile);
+                    if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
+                        throw new RuntimeException("The integrity of the message is not verified");
+                    }
                 }
 
                 decryptedContent = new String(decryptedFile);
@@ -253,10 +272,20 @@ public class Client {
         // Agree on a shared secret
         // BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
         // Encrypts the message
-        byte[] encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
-        // Generates the MAC
-        byte[] digest = MAC.generateMAC(message.getBytes ( ),macKey);
-        //byte[] digest = Integrity.generateMAC ( message.getBytes ( ), macKey);
+        byte[] encryptedMessage = null;
+        if(choice.get(1) == 0){ //AES
+            encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+        }else if(choice.get(1) == 1){ //3DES
+            //encryptedMessage = 3DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+        }
+        byte[] digest = null;
+
+        if(choice.get(0) == 0){ //MAC
+            // Generates the MAC
+            digest = MAC.generateMAC(message.getBytes ( ),macKey);
+        }else if(choice.get(0) == 1){ //HASH
+            digest = Hash.generateDigest(message.getBytes ( ));
+        }
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message
