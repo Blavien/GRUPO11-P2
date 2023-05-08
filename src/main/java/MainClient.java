@@ -35,13 +35,14 @@ public class MainClient {
 
                     RequestUtils.newClientRegister(actualClient.getClientName()); //Register new clients
 
-                    if(RequestUtils.requestLimit(actualClient.getClientName()) == 0){
+                    if(RequestUtils.requestLimit(actualClient.getClientName()) == 0){   //Request counter do client == 0  - novo ou requests levou reset
 
                         RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
+
                         actualClient.doHandshake();
 
                     }
-
+                    RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
                     while (subAlive == true){
 
                         if(RequestUtils.requestLimit(actualClient.getClientName()) == 5){

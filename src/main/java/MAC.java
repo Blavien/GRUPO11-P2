@@ -12,11 +12,10 @@ public class MAC {
     private static final String MAC_ALGORITHM = "HmacSHA256";
 
     public static SecretKey createMACKey () throws Exception{
-        SecretKey macKey;
         KeyGenerator keyGen = KeyGenerator.getInstance(MAC_ALGORITHM);
         SecureRandom random = new SecureRandom();
         keyGen.init(random);
-        macKey = keyGen.generateKey();
+        SecretKey macKey = keyGen.generateKey();
         return macKey;
     }
     /**

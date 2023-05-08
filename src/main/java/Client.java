@@ -23,7 +23,7 @@ public class Client {
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    private final SecretKey macKey;
+    private SecretKey macKey;
     private int requestLimit;
     private String fileName;
     private PublicKey serverPublicRSAKey;
@@ -92,7 +92,7 @@ public class Client {
     public void doHandshake() throws Exception {
         serverPublicRSAKey = rsaKeyDistribution();
         sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
-        RequestUtils.writeNumberToFile(1, RequestUtils.HANDSHAKE_SIGNAL);
+        sendMacKey();
     }
 
     public void endConnection() throws Exception {
@@ -113,21 +113,19 @@ public class Client {
 
         byte[] decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
 
-        byte[] computedDigest = Integrity.generateMAC(decryptedFile, String.valueOf(macKey));
+        byte[] computedDigest = MAC.generateMAC(decryptedFile, macKey);
 
         if (!Integrity.verifyMAC(response.getSignature(), computedDigest)) {
             throw new RuntimeException("The integrity of the message is not verified");
         }
 
-        System.out.println(new String(decryptedFile));
-        String bora = new String(decryptedFile);
+        String decryptedContent = new String(decryptedFile);  // To handle divided content
 
-        if (bora.equals("INICIO")) {
+        if (decryptedContent.equals("INICIO")) { //Decrypts this first message - INICIO
 
-            System.out.println("Recebeu o inicio");
+            //System.out.println("Recebeu o inicio");
 
-            while (!bora.equals("FIM")){
-                System.out.println("\ndentro dentro dentro");
+            while (!decryptedContent.equals("FIM")){ //Decrypts the rest of the message until we get the last message - FIM
 
                 response = (Message) in.readObject();
 
@@ -135,7 +133,7 @@ public class Client {
 
                 decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
 
-                System.out.println(new String (decryptedFile));
+                //System.out.println(new String (decryptedFile));
 
                 computedDigest = Integrity.generateMAC(decryptedFile, String.valueOf(macKey));
 
@@ -143,11 +141,16 @@ public class Client {
                     throw new RuntimeException("The integrity of the message is not verified");
                 }
 
-                bora = new String(decryptedFile);
+                decryptedContent = new String(decryptedFile);
 
                 unitedMessage +=new String(decryptedFile);
             }
-            System.out.println("Chegou ao fim");
+            System.out.println("We have reached the end of the file content.");
+
+            System.out.println("This is the file content:");
+
+            System.out.println(new String (unitedMessage));
+
             saveFiles(unitedMessage);
 
         }else{
@@ -196,27 +199,24 @@ public class Client {
         out.writeObject ( publicKey );
         out.flush ( );
     }
-
+    private void sendMacKey() throws Exception{
+        out.writeObject(macKey);
+        out.flush ();
+        System.out.println("MACKEY HAS BEEN SENT");
+    }
     public void sendMessage ( String message ) throws Exception {
         // Agree on a shared secret
         // BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
         // Encrypts the message
         byte[] encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         // Generates the MAC
-        byte[] digest = Integrity.generateMAC ( message.getBytes ( ), String.valueOf(macKey));
+        byte[] digest = MAC.generateMAC(message.getBytes ( ),macKey);
+        //byte[] digest = Integrity.generateMAC ( message.getBytes ( ), macKey);
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message
         out.writeObject ( messageObj );
         out.flush();
-    }
-    public void teste() throws Exception {
-        BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
-        String messages="Teste";
-        byte[] encryptedMessages = AES.encrypt ( messages.getBytes ( ) , sharedSecret.toByteArray ( ) );
-        System.out.println(encryptedMessages);
-        byte[] decryptdMessages = AES.decrypt ( messages.getBytes ( ) , sharedSecret.toByteArray ( ) );
-        System.out.println(decryptdMessages);
     }
     private BigInteger agreeOnSharedSecret (PublicKey serverPublicRSAKey ) throws Exception {
         // Generates a private key
