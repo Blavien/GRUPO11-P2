@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e12a3f4f-7797-423d-b277-1261527d4ebd" name="Changes" comment="test for  RSA,MESSAGE,DifieHelman,Mac,ByteUtil,AES,Hash,Digest,FileHandler,Server,RequestUtils">
+      <change afterPath="$PROJECT_DIR$/src/test/java/DESTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/AESTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/AESTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ClientTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/text-file-server.iml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="0" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="JUnit5 Test Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev-AndreGois" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2PC6ZCTevrT3MvhZonftsnuVxhx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "last_directory_selection": "C:/Users/André/IdeaProjects/GRUPO11-P21/src/test/java",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.DESTest">
+    <configuration name="AESTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="AESTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in text-file-server" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ClientTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DESTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="DESTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DiffieHellmanTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="DiffieHellmanTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.DESTest" />
+        <item itemvalue="JUnit.AESTest" />
+        <item itemvalue="JUnit.ClientTest" />
+        <item itemvalue="JUnit.DiffieHellmanTest" />
+        <item itemvalue="JUnit.All in text-file-server" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e12a3f4f-7797-423d-b277-1261527d4ebd" name="Changes" comment="" />
+      <created>1682948769934</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1682948769934</updated>
+    </task>
+    <task id="LOCAL-00001" summary="2.2 agreonsharedkey">
+      <created>1683307667138</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1683307667138</updated>
+    </task>
+    <task id="LOCAL-00002" summary="2.2 agreonsharedkey">
+      <created>1683365784447</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1683365784448</updated>
+    </task>
+    <task id="LOCAL-00003" summary="2.2 agreonsharedkey">
+      <created>1683365819779</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1683365819779</updated>
+    </task>
+    <task id="LOCAL-00004" summary="test for AES and ByteTest Classe">
+      <created>1683494177648</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1683494177648</updated>
+    </task>
+    <task id="LOCAL-00005" summary="test for AES and ByteTest Classe">
+      <created>1683494388481</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1683494388481</updated>
+    </task>
+    <task id="LOCAL-00006" summary="test for Message,MACTest,RSATest,DigestTest,Client,ClientHandler, and do some mudation in the server and Client in the method sendMessage changing to using MAC  Classe">
+      <created>1683512147580</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1683512147580</updated>
+    </task>
+    <task id="LOCAL-00007" summary="test for Message,MACTest,RSATest,DigestTest,Client,ClientHandler, and do some mudation in the server and Client in the method sendMessage changing to using MAC  Classe">
+      <created>1683530532483</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1683530532483</updated>
+    </task>
+    <task id="LOCAL-00008" summary="test for Message,MACTest,RSATest,DigestTest,Client,ClientHandler, and do some mudation in the server and Client in the method sendMessage changing to using MAC  Classe">
+      <created>1683543986051</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1683543986051</updated>
+    </task>
+    <task id="LOCAL-00009" summary="test for Message,MACTest,RSATest,DigestTest,Client,ClientHandler, and do some mudation in the server and Client in the method sendMessage changing to using MAC  Classe">
+      <created>1683554742137</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1683554742137</updated>
+    </task>
+    <task id="LOCAL-00010" summary="test for Message,MACTest,RSATest,DigestTest,Client,ClientHandler, and do some mudation in the server and Client in the method sendMessage changing to using MAC  Classe">
+      <created>1683560894510</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1683560894510</updated>
+    </task>
+    <task id="LOCAL-00011" summary="test for  RSA,MESSAGE,DifieHelman,Mac,ByteUtil,AES,Hash,Digest,FileHandler,Server,RequestUtils">
+      <created>1683562899974</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1683562899974</updated>
+    </task>
+    <task id="LOCAL-00012" summary="test for  RSA,MESSAGE,DifieHelman,Mac,ByteUtil,AES,Hash,Digest,FileHandler,Server,RequestUtils">
+      <created>1683563813226</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1683563813226</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="2.2 agreonsharedkey" />
+    <MESSAGE value="test for AES and ByteTest Classe" />
+    <MESSAGE value="test for Message,MACTest,RSATest,DigestTest,Client,ClientHandler, and do some mudation in the server and Client in the method sendMessage changing to using MAC  Classe" />
+    <MESSAGE value="test for  RSA,MESSAGE,DifieHelman,Mac,ByteUtil,AES,Hash,Digest,FileHandler,Server,RequestUtils" />
+    <option name="LAST_COMMIT_MESSAGE" value="test for  RSA,MESSAGE,DifieHelman,Mac,ByteUtil,AES,Hash,Digest,FileHandler,Server,RequestUtils" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ByteUtilsTest.ic" NAME="ByteUtilsTest Coverage Results" MODIFIED="1683466274752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$HashTest.ic" NAME="HashTest Coverage Results" MODIFIED="1683562129250" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$MACTest.ic" NAME="MACTest Coverage Results" MODIFIED="1683509881343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$All_in_text_file_server.ic" NAME="All in text-file-server Coverage Results" MODIFIED="1683562177400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DigestTest.ic" NAME="DigestTest Coverage Results" MODIFIED="1683511081976" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$MainServerTest.ic" NAME="MainServerTest Coverage Results" MODIFIED="1683557918225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ServerTest.ic" NAME="ServerTest Coverage Results" MODIFIED="1683536440366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$IntegrityTest.ic" NAME="IntegrityTest Coverage Results" MODIFIED="1683547135324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ByteUtilsTest_computeXOR.ic" NAME="ByteUtilsTest.computeXOR Coverage Results" MODIFIED="1683482452164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$java_in_text_file_server.ic" NAME="java in text-file-server Coverage Results" MODIFIED="1683556637445" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$AESTest.ic" NAME="AESTest Coverage Results" MODIFIED="1683566827142" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DiffieHellmanTest.ic" NAME="DiffieHellmanTest Coverage Results" MODIFIED="1683562795504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$RSATest.ic" NAME="RSATest Coverage Results" MODIFIED="1683534405261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DigestTest_generateDigest.ic" NAME="DigestTest.generateDigest Coverage Results" MODIFIED="1683511313752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$FileHandlerTest.ic" NAME="FileHandlerTest Coverage Results" MODIFIED="1683550281567" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ByteUtilsTest_testSplitByteArrayWithPadding.ic" NAME="ByteUtilsTest.testSplitByteArrayWithPadding Coverage Results" MODIFIED="1683495381043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$MessageTest.ic" NAME="MessageTest Coverage Results" MODIFIED="1683530846063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>

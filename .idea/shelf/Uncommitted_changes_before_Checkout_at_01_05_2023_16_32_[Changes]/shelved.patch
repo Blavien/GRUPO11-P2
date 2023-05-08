@@ -1,0 +1,429 @@
+Index: src/main/java/RSA.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import javax.crypto.Cipher;\r\nimport java.security.*;\r\nimport java.io.*;\r\n\r\npublic class RSA {\r\n    public static KeyPair generateKeyPair () throws Exception {\r\n        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance ( \"RSA\" );\r\n        keyPairGenerator.initialize ( 2048 );\r\n        return keyPairGenerator.generateKeyPair();\r\n    }\r\n    public static void storeRSAKeys(KeyPair keyPair, String client_name) throws Exception{\r\n        // Write the private key to disk\r\n        String privateKeyFolder = client_name + \"/private\";\r\n        File privateUserKey = new File(privateKeyFolder);\r\n        privateUserKey.mkdirs();\r\n\r\n        // Invés de escrever a chave em String, ela é guardada como um objecto PrivateKey\r\n        File privateKeyFile = new File(privateKeyFolder, \"privateKey.key\");\r\n        FileOutputStream fos = new FileOutputStream(privateKeyFile);\r\n        ObjectOutputStream oos = new ObjectOutputStream(fos);\r\n        oos.writeObject(keyPair.getPrivate());\r\n        oos.close();\r\n\r\n        // Write the public key\r\n        String publicKeyFolder = \"pki/public_keys/\";\r\n        File publiKeyFile = new File(publicKeyFolder, client_name+ \"PUk.key\");\r\n        FileOutputStream pubFOS = new FileOutputStream(publiKeyFile);\r\n        ObjectOutputStream pubOOS = new ObjectOutputStream(pubFOS);\r\n        pubOOS.writeObject(keyPair.getPublic());\r\n        pubOOS.close();\r\n    }\r\n    public static PrivateKey getPrivateKey(String client_name) throws Exception{\r\n        String privateKeyFolder = client_name + \"/private\";\r\n        FileInputStream fis = new FileInputStream(privateKeyFolder + \"/privateKey.key\");\r\n        ObjectInputStream ois = new ObjectInputStream(fis);\r\n        PrivateKey privateKey = (PrivateKey) ois.readObject();\r\n        ois.close();\r\n        return privateKey;\r\n    }\r\n    public static PublicKey getPublicKey(String client_name) throws Exception{\r\n        String publicKeyFolder = \"pki/public_keys/\";\r\n        FileInputStream fis = new FileInputStream(publicKeyFolder + \"/publicKey.key\");\r\n        ObjectInputStream ois = new ObjectInputStream(fis);\r\n        PublicKey publicKey = (PublicKey) ois.readObject();\r\n        ois.close();\r\n        return publicKey;\r\n    }\r\n    public static byte[] encryptRSA ( byte[] message , PublicKey publicKey ) throws Exception {\r\n        Cipher cipher = Cipher.getInstance ( \"RSA\" );\r\n        cipher.init ( Cipher.ENCRYPT_MODE , publicKey );\r\n        return cipher.doFinal ( message );\r\n    }\r\n\r\n    public static byte[] decryptRSA ( byte[] message , PrivateKey privateKey ) throws Exception {\r\n        Cipher cipher = Cipher.getInstance ( \"RSA\" );\r\n        cipher.init ( Cipher.DECRYPT_MODE , privateKey );\r\n        return cipher.doFinal ( message );\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/RSA.java b/src/main/java/RSA.java
+--- a/src/main/java/RSA.java	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ b/src/main/java/RSA.java	(date 1682955062490)
+@@ -1,4 +1,6 @@
+ import javax.crypto.Cipher;
++import javax.crypto.spec.SecretKeySpec;
++import java.nio.ByteBuffer;
+ import java.security.*;
+ import java.io.*;
+ 
+@@ -37,6 +39,20 @@
+         ois.close();
+         return privateKey;
+     }
++    public static byte[] decryptMessage ( byte[] message , byte[] secretKey ) throws Exception {
++        byte[] secretKeyPadded = ByteBuffer.allocate ( 16 ).put ( secretKey ).array ( );
++        SecretKeySpec secreteKeySpec = new SecretKeySpec ( secretKeyPadded , "AES" );
++        Cipher cipher = Cipher.getInstance ( "AES/ECB/PKCS5Padding" );
++        cipher.init ( Cipher.DECRYPT_MODE , secreteKeySpec );
++        return cipher.doFinal ( message );
++    }
++    public static byte[] encryptMessage ( byte[] message , byte[] secretKey ) throws Exception {
++        byte[] secretKeyPadded = ByteBuffer.allocate ( 16 ).put ( secretKey ).array ( );
++        SecretKeySpec secreteKeySpec = new SecretKeySpec ( secretKeyPadded , "AES" );
++        Cipher cipher = Cipher.getInstance ( "AES/ECB/PKCS5Padding" );
++        cipher.init ( Cipher.ENCRYPT_MODE , secreteKeySpec );
++        return cipher.doFinal ( message );
++    }
+     public static PublicKey getPublicKey(String client_name) throws Exception{
+         String publicKeyFolder = "pki/public_keys/";
+         FileInputStream fis = new FileInputStream(publicKeyFolder + "/publicKey.key");
+@@ -45,13 +61,13 @@
+         ois.close();
+         return publicKey;
+     }
+-    public static byte[] encryptRSA ( byte[] message , PublicKey publicKey ) throws Exception {
++    public static byte[] encryptRSA ( byte[] message , Key publicKey ) throws Exception {
+         Cipher cipher = Cipher.getInstance ( "RSA" );
+         cipher.init ( Cipher.ENCRYPT_MODE , publicKey );
+         return cipher.doFinal ( message );
+     }
+ 
+-    public static byte[] decryptRSA ( byte[] message , PrivateKey privateKey ) throws Exception {
++    public static byte[] decryptRSA ( byte[] message , Key privateKey ) throws Exception {
+         Cipher cipher = Cipher.getInstance ( "RSA" );
+         cipher.init ( Cipher.DECRYPT_MODE , privateKey );
+         return cipher.doFinal ( message );
+Index: src/main/java/Server.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.io.IOException;\r\nimport java.lang.reflect.Array;\r\nimport java.net.ServerSocket;\r\nimport java.net.Socket;\r\nimport java.security.KeyPair;\r\nimport java.security.PrivateKey;\r\nimport java.security.PublicKey;\r\nimport java.util.Arrays;\r\nimport java.util.HashMap;\r\nimport java.util.Map;\r\n\r\n/**\r\n * This class represents a server that receives a message from the clients. The server is implemented as a thread. Each\r\n * time a client connects to the server, a new thread is created to handle the communication with the client.\r\n */\r\npublic class Server implements Runnable {\r\n    public static final String FILE_PATH = \"server/files\";\r\n    public static final String server_name = \"Server_G11\";\r\n    private final ServerSocket server;\r\n    private final boolean isConnected;\r\n    private final PrivateKey privateRSAKey;\r\n    private final PublicKey publicRSAKey;\r\n\r\n    /**\r\n     * Constructs a Server object by specifying the port number. The server will be then created on the specified port.\r\n     * The server will be accepting connections from all local addresses.\r\n     *\r\n     * @param port the port number\r\n     *\r\n     * @throws IOException if an I/O error occurs when opening the socket\r\n     */\r\n    public Server ( int port ) throws Exception {\r\n        server = new ServerSocket ( port );\r\n        isConnected = true; // TODO: Check if this is necessary or if it should be controlled\r\n        KeyPair keyPair = RSA.generateKeyPair();\r\n        this.privateRSAKey = keyPair.getPrivate();\r\n        this.publicRSAKey = keyPair.getPublic();\r\n        RSA.storeRSAKeys(keyPair,server_name);\r\n    }\r\n    public String getServer_name(){\r\n        return this.server_name;\r\n    }\r\n    @Override\r\n    public void run ( ) {\r\n        try {\r\n            while ( isConnected ) {\r\n                Socket client = server.accept ( );\r\n                // Process the request\r\n                process ( client );\r\n            }\r\n            closeConnection ( );\r\n        } catch ( Exception e ) {\r\n            throw new RuntimeException ( e );\r\n        }\r\n    }\r\n\r\n    /**\r\n     * Processes the request from the client.\r\n     *\r\n     * @throws IOException if an I/O error occurs when reading stream header\r\n     */\r\n    private void process ( Socket client ) throws IOException {\r\n        ClientHandler clientHandler = new ClientHandler ( client );\r\n        clientHandler.start ( );\r\n    }\r\n\r\n    /**\r\n     * Closes the connection and the associated streams.\r\n     */\r\n    private void closeConnection ( ) {\r\n        try {\r\n            server.close ( );\r\n        } catch ( IOException e ) {\r\n            throw new RuntimeException ( e );\r\n        }\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/Server.java b/src/main/java/Server.java
+--- a/src/main/java/Server.java	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ b/src/main/java/Server.java	(date 1682955062504)
+@@ -1,5 +1,8 @@
+ import java.io.IOException;
++import java.io.ObjectInputStream;
++import java.io.ObjectOutputStream;
+ import java.lang.reflect.Array;
++import java.math.BigInteger;
+ import java.net.ServerSocket;
+ import java.net.Socket;
+ import java.security.KeyPair;
+@@ -20,6 +23,8 @@
+     private final boolean isConnected;
+     private final PrivateKey privateRSAKey;
+     private final PublicKey publicRSAKey;
++    private ObjectInputStream in;
++    private ObjectOutputStream out;
+ 
+     /**
+      * Constructs a Server object by specifying the port number. The server will be then created on the specified port.
+@@ -45,6 +50,14 @@
+         try {
+             while ( isConnected ) {
+                 Socket client = server.accept ( );
++                in = new ObjectInputStream( client.getInputStream ( ) );
++                out = new ObjectOutputStream( client.getOutputStream ( ) );
++                // Perform key distribution
++                PublicKey clientPublicRSAKey = rsaKeyDistribution ( in );
++                // Process the request
++                process ( in , clientPublicRSAKey );
++                // Close connection
++                //Atribui as chaves criadass pelo RSA a estas vars
+                 // Process the request
+                 process ( client );
+             }
+@@ -54,6 +67,43 @@
+         }
+     }
+ 
++    private void process ( ObjectInputStream in , PublicKey senderPublicRSAKey ) throws Exception {
++        // Agree on a shared secret
++        BigInteger sharedSecret = agreeOnSharedSecret ( senderPublicRSAKey );
++        // Reads the message object
++        Message messageObj = ( Message ) in.readObject ( );
++        // Extracts and decrypt the message
++        byte[] decryptedMessage = RSA.decryptMessage ( messageObj.getMessage ( ) , sharedSecret.toByteArray ( ) );
++        // Computes the digest of the received message
++        byte[] computedDigest = Integrity.generateDigest ( decryptedMessage );
++        // Verifies the integrity of the message
++        if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
++            throw new RuntimeException ( "The integrity of the message is not verified" );
++        }
++        System.out.println ( new String ( decryptedMessage ) );
++    }
++
++    /**
++     * Performs the Diffie-Hellman algorithm to agree on a shared private key.
++     *
++     * @param senderPublicRSAKey the public key of the sender
++     *
++     * @return the shared secret key
++     *
++     * @throws Exception when the key agreement protocol fails
++     */
++    private BigInteger agreeOnSharedSecret ( PublicKey senderPublicRSAKey ) throws Exception {
++        // Generate a pair of keys
++        BigInteger privateKey = DiffieHellman.generatePrivateKey ( );
++        BigInteger publicKey = DiffieHellman.generatePublicKey ( privateKey );
++        // Extracts the public key from the request
++        BigInteger clientPublicKey = new BigInteger ( RSA.decryptRSA ( ( byte[] ) in.readObject ( ) , senderPublicRSAKey ) );
++        // Send the public key to the client
++        sendPublicDHKey ( publicKey );
++        // Generates the shared secret
++        return DiffieHellman.computePrivateKey ( clientPublicKey , privateKey );
++    }
++
+     /**
+      * Processes the request from the client.
+      *
+@@ -75,4 +125,21 @@
+         }
+     }
+ 
++    private PublicKey rsaKeyDistribution ( ObjectInputStream in ) throws Exception {
++        // Extract the public key
++        PublicKey senderPublicRSAKey = ( PublicKey ) in.readObject ( );
++        // Send the public key
++        sendPublicRSAKey ( );
++        return senderPublicRSAKey;
++    }
++    private void sendPublicRSAKey ( ) throws IOException {
++        out.writeObject ( publicRSAKey );
++        out.flush ( );
++    }
++
++    private void sendPublicDHKey ( BigInteger publicKey ) throws Exception {
++        out.writeObject ( RSA.encryptRSA ( publicKey.toByteArray ( ) , this.privateRSAKey ) );
++    }
++
++
+ }
+\ No newline at end of file
+Index: src/main/java/ClientHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.io.*;\r\nimport java.net.Socket;\r\nimport java.nio.file.Files;\r\nimport java.security.PublicKey;\r\nimport java.util.ArrayList;\r\nimport java.util.Arrays;\r\nimport java.util.HashMap;\r\nimport java.util.List;\r\n\r\n/**\r\n * This class represents the client handler. It handles the communication with the client. It reads the file from the\r\n * server and sends it to the client.\r\n */\r\npublic class ClientHandler extends Thread {\r\n    private final ObjectInputStream in;\r\n    private final ObjectOutputStream out;\r\n    private final Socket client;\r\n    private final boolean isConnected;\r\n    private ArrayList<String> requestSplit;\r\n    // Initialize HashMap to keep track of request counts for each client\r\n\r\n\r\n    /**\r\n     * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is\r\n     * done in a separate thread.\r\n     *\r\n     * @param client the socket to communicate with the client\r\n     *\r\n     * @throws IOException when an I/O error occurs when creating the socket\r\n     */\r\n    public ClientHandler ( Socket client ) throws IOException {\r\n        this.client = client;\r\n        in = new ObjectInputStream ( client.getInputStream ( ) );\r\n        out = new ObjectOutputStream ( client.getOutputStream ( ) );\r\n        isConnected = true; // TODO: Check if this is necessary or if it should be controlled\r\n    }\r\n\r\n    @Override\r\n    public void run ( ) {\r\n        super.run ( );\r\n        try {\r\n            while ( isConnected ) {\r\n                // Reads the message to extract the path of the file\r\n                Message message = ( Message ) in.readObject ( );\r\n                String request = new String ( message.getMessage ( ) );\r\n                System.out.println(\"\\n***** SERVER *****\\n\"+ request);\r\n                //Splits message received\r\n                requestSplit = RequestUtils.splitRequest(request);\r\n                //Regista os número de pedidos feitos por este utilizador\r\n                RequestUtils.registerRequests (requestSplit);\r\n\r\n\r\n                // Reads the file and sends it to the client\r\n                byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );\r\n                sendFile ( content );\r\n            }\r\n            // Close connection\r\n            closeConnection ( );\r\n        } catch ( IOException | ClassNotFoundException e ) {\r\n            // Close connection\r\n            closeConnection ( );\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(e);\r\n        }\r\n    }\r\n    /**\r\n     * Sends the file to the client\r\n     *\r\n     * @param content the content of the file to send\r\n     *\r\n     * @throws IOException when an I/O error occurs when sending the file\r\n     */\r\n    private void sendFile ( byte[] content ) throws IOException {\r\n        Message response = new Message ( content );\r\n        out.writeObject ( response );\r\n        out.flush ( );\r\n    }\r\n\r\n\r\n    /**\r\n     * Closes the connection by closing the socket and the streams.\r\n     */\r\n    private void closeConnection ( ) {\r\n        try {\r\n            client.close ( );\r\n            out.close ( );\r\n            in.close ( );\r\n        } catch ( IOException e ) {\r\n            throw new RuntimeException ( e );\r\n        }\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ClientHandler.java b/src/main/java/ClientHandler.java
+--- a/src/main/java/ClientHandler.java	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ b/src/main/java/ClientHandler.java	(date 1682955119387)
+@@ -17,6 +17,7 @@
+     private final Socket client;
+     private final boolean isConnected;
+     private ArrayList<String> requestSplit;
++
+     // Initialize HashMap to keep track of request counts for each client
+ 
+ 
+Index: src/main/java/Message.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.io.Serializable;\r\n\r\n/**\r\n * This class represents a message object that is sent to the server by the client.\r\n */\r\npublic class Message implements Serializable {\r\n\r\n    private final byte[] message;\r\n\r\n    /**\r\n     * Constructs a Message object by specifying the message bytes that will be sent to the server.\r\n     *\r\n     * @param message the message that is sent to the server\r\n     */\r\n    public Message ( byte[] message ) {\r\n        this.message = message;\r\n    }\r\n\r\n    /**\r\n     * Gets the message string.\r\n     *\r\n     * @return the message string\r\n     */\r\n    public byte[] getMessage ( ) {\r\n        return message;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/Message.java b/src/main/java/Message.java
+--- a/src/main/java/Message.java	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ b/src/main/java/Message.java	(date 1682955119396)
+@@ -6,14 +6,20 @@
+ public class Message implements Serializable {
+ 
+     private final byte[] message;
+-
++    private  byte[] signature;
+     /**
+      * Constructs a Message object by specifying the message bytes that will be sent to the server.
+      *
+      * @param message the message that is sent to the server
+      */
+-    public Message ( byte[] message ) {
++    public Message ( byte[] message , byte[] signature ) {
++        this.message = message;
++        this.signature = signature;
++    }
++
++    public Message ( byte[] message  ) {
+         this.message = message;
++
+     }
+ 
+     /**
+@@ -24,4 +30,7 @@
+     public byte[] getMessage ( ) {
+         return message;
+     }
++    public byte[] getSignature ( ) {
++        return signature;
++    }
+ }
+\ No newline at end of file
+Index: .idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_9_2.xml
+===================================================================
+diff --git a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_9_2.xml b/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_9_2.xml
+deleted file mode 100644
+--- a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_9_2.xml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ /dev/null	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
+@@ -1,13 +0,0 @@
+-<component name="libraryTable">
+-  <library name="Maven: org.junit.jupiter:junit-jupiter-params:5.9.2">
+-    <CLASSES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar!/" />
+-    </CLASSES>
+-    <JAVADOC>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2-javadoc.jar!/" />
+-    </JAVADOC>
+-    <SOURCES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2-sources.jar!/" />
+-    </SOURCES>
+-  </library>
+-</component>
+\ No newline at end of file
+Index: .idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_9_2.xml
+===================================================================
+diff --git a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_9_2.xml b/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_9_2.xml
+deleted file mode 100644
+--- a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_9_2.xml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ /dev/null	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
+@@ -1,13 +0,0 @@
+-<component name="libraryTable">
+-  <library name="Maven: org.junit.jupiter:junit-jupiter-api:5.9.2">
+-    <CLASSES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar!/" />
+-    </CLASSES>
+-    <JAVADOC>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2-javadoc.jar!/" />
+-    </JAVADOC>
+-    <SOURCES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2-sources.jar!/" />
+-    </SOURCES>
+-  </library>
+-</component>
+\ No newline at end of file
+Index: .idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_9_2.xml
+===================================================================
+diff --git a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_9_2.xml b/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_9_2.xml
+deleted file mode 100644
+--- a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_9_2.xml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ /dev/null	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
+@@ -1,13 +0,0 @@
+-<component name="libraryTable">
+-  <library name="Maven: org.junit.jupiter:junit-jupiter:5.9.2">
+-    <CLASSES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar!/" />
+-    </CLASSES>
+-    <JAVADOC>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2-javadoc.jar!/" />
+-    </JAVADOC>
+-    <SOURCES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2-sources.jar!/" />
+-    </SOURCES>
+-  </library>
+-</component>
+\ No newline at end of file
+Index: .idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_9_2.xml
+===================================================================
+diff --git a/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_9_2.xml b/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_9_2.xml
+deleted file mode 100644
+--- a/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_9_2.xml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ /dev/null	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
+@@ -1,13 +0,0 @@
+-<component name="libraryTable">
+-  <library name="Maven: org.junit.platform:junit-platform-engine:1.9.2">
+-    <CLASSES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar!/" />
+-    </CLASSES>
+-    <JAVADOC>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2-javadoc.jar!/" />
+-    </JAVADOC>
+-    <SOURCES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2-sources.jar!/" />
+-    </SOURCES>
+-  </library>
+-</component>
+\ No newline at end of file
+Index: .idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_9_2.xml
+===================================================================
+diff --git a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_9_2.xml b/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_9_2.xml
+deleted file mode 100644
+--- a/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_9_2.xml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ /dev/null	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
+@@ -1,13 +0,0 @@
+-<component name="libraryTable">
+-  <library name="Maven: org.junit.jupiter:junit-jupiter-engine:5.9.2">
+-    <CLASSES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar!/" />
+-    </CLASSES>
+-    <JAVADOC>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2-javadoc.jar!/" />
+-    </JAVADOC>
+-    <SOURCES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2-sources.jar!/" />
+-    </SOURCES>
+-  </library>
+-</component>
+\ No newline at end of file
+Index: .idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_9_2.xml
+===================================================================
+diff --git a/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_9_2.xml b/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_9_2.xml
+deleted file mode 100644
+--- a/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_9_2.xml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ /dev/null	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
+@@ -1,13 +0,0 @@
+-<component name="libraryTable">
+-  <library name="Maven: org.junit.platform:junit-platform-commons:1.9.2">
+-    <CLASSES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar!/" />
+-    </CLASSES>
+-    <JAVADOC>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2-javadoc.jar!/" />
+-    </JAVADOC>
+-    <SOURCES>
+-      <root url="jar://$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2-sources.jar!/" />
+-    </SOURCES>
+-  </library>
+-</component>
+\ No newline at end of file
+Index: src/main/java/Integrity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/Integrity.java b/src/main/java/Integrity.java
+new file mode 100644
+--- /dev/null	(date 1682955119443)
++++ b/src/main/java/Integrity.java	(date 1682955119443)
+@@ -0,0 +1,37 @@
++import java.security.MessageDigest;
++import java.util.Arrays;
++
++/**
++ * This class implements the generation and verification of the message digest.
++ */
++public class Integrity {
++
++    private static final String DIGEST_ALGORITHM = "SHA-512";
++
++    /**
++     * Computes the message digest of the given message.
++     *
++     * @param message The message to be digested.
++     *
++     * @return the message digest
++     *
++     * @throws Exception if the message digest algorithm is not available
++     */
++    public static byte[] generateDigest ( byte[] message ) throws Exception {
++        MessageDigest messageDigest = MessageDigest.getInstance ( DIGEST_ALGORITHM );
++        return messageDigest.digest ( message );
++    }
++
++    /**
++     * Verifies the message digest of the given message.
++     *
++     * @param digest         the message digest to be verified
++     * @param computedDigest the computed message digest
++     *
++     * @return true if the message digest is valid, false otherwise
++     */
++    public static boolean verifyDigest ( byte[] digest , byte[] computedDigest ) {
++        return Arrays.equals ( digest , computedDigest );
++    }
++
++}
+\ No newline at end of file
+Index: .idea/GRUPO11-P2.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule=\"true\" type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" LANGUAGE_LEVEL=\"JDK_17\">\r\n    <output url=\"file://$MODULE_DIR$/target/classes\" />\r\n    <output-test url=\"file://$MODULE_DIR$/target/test-classes\" />\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/main/java\" isTestSource=\"false\" />\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/test/java\" isTestSource=\"true\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/file-server-main/target\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/target\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter:5.9.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter-api:5.9.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.opentest4j:opentest4j:1.2.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.platform:junit-platform-commons:1.9.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.apiguardian:apiguardian-api:1.1.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter-params:5.9.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter-engine:5.9.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.platform:junit-platform-engine:1.9.2\" level=\"project\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/GRUPO11-P2.iml b/.idea/GRUPO11-P2.iml
+--- a/.idea/GRUPO11-P2.iml	(revision 2745b01b19c1832a9a26f7a3d1fe6f8d60680981)
++++ b/.idea/GRUPO11-P2.iml	(date 1682955119434)
+@@ -11,13 +11,13 @@
+     </content>
+     <orderEntry type="inheritedJdk" />
+     <orderEntry type="sourceFolder" forTests="false" />
+-    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.9.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.9.2" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.9.3" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.9.3" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.9.2" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.9.3" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-params:5.9.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.9.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.9.2" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-params:5.9.3" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.9.3" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.9.3" level="project" />
+   </component>
+ </module>
+\ No newline at end of file
