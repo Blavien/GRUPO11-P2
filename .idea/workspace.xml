@@ -5,33 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75ea87d5-b57d-45a4-9edf-2445a379a4bb" name="Changes" comment="fix : working">
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_05_2023_17_32_[Changes]/shelved.patch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_05_2023_17_32__Changes_.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/AES.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/ByteUtils.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/Client.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/ClientHandler.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/DES.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/DES3.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/DiffieHellman.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/Digest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/FileHandler.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/Hash.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/MAC.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/MainClient.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/MainServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/Message.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/RSA.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/RequestUtils.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/Server.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GOOD/private/privateKey.key" beforeDir="false" afterPath="$PROJECT_DIR$/GOOD/private/privateKey.key" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sara/private/privateKey.key" beforeDir="false" afterPath="$PROJECT_DIR$/Sara/private/privateKey.key" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server_G11/private/privateKey.key" beforeDir="false" afterPath="$PROJECT_DIR$/Server_G11/private/privateKey.key" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/Registry/registry.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/Registry/registry.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Hash.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Hash.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_05_2023_17_32__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_05_2023_17_32__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/HashTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/HashTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/classpath.index" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/classpath.index" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/DESTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/DESTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/HashTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/HashTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +91,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Client">
+  <component name="RunManager" selected="JUnit.HashTest">
     <configuration name="Client" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="MainClient" />
       <module name="text-file-server" />
@@ -122,6 +102,24 @@
     <configuration name="Server" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="MainServer" />
       <module name="text-file-server" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DESTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="DESTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HashTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="text-file-server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="HashTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -142,7 +140,15 @@
     <list>
       <item itemvalue="Application.Server" />
       <item itemvalue="Application.Client" />
+      <item itemvalue="JUnit.DESTest" />
+      <item itemvalue="JUnit.HashTest" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.HashTest" />
+        <item itemvalue="JUnit.DESTest" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -399,5 +405,25 @@
         </breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ByteUtilsTest.ic" NAME="ByteUtilsTest Coverage Results" MODIFIED="1683466274752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$HashTest.ic" NAME="HashTest Coverage Results" MODIFIED="1683569951360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$MACTest.ic" NAME="MACTest Coverage Results" MODIFIED="1683509881343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$All_in_text_file_server.ic" NAME="All in text-file-server Coverage Results" MODIFIED="1683562177400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DigestTest.ic" NAME="DigestTest Coverage Results" MODIFIED="1683511081976" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$MainServerTest.ic" NAME="MainServerTest Coverage Results" MODIFIED="1683557918225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ServerTest.ic" NAME="ServerTest Coverage Results" MODIFIED="1683536440366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$IntegrityTest.ic" NAME="IntegrityTest Coverage Results" MODIFIED="1683547135324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ByteUtilsTest_computeXOR.ic" NAME="ByteUtilsTest.computeXOR Coverage Results" MODIFIED="1683482452164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$java_in_text_file_server.ic" NAME="java in text-file-server Coverage Results" MODIFIED="1683556637445" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$AESTest.ic" NAME="AESTest Coverage Results" MODIFIED="1683566827142" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DiffieHellmanTest.ic" NAME="DiffieHellmanTest Coverage Results" MODIFIED="1683562795504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$RSATest.ic" NAME="RSATest Coverage Results" MODIFIED="1683534405261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DigestTest_generateDigest.ic" NAME="DigestTest.generateDigest Coverage Results" MODIFIED="1683511313752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$FileHandlerTest.ic" NAME="FileHandlerTest Coverage Results" MODIFIED="1683550281567" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$ByteUtilsTest_testSplitByteArrayWithPadding.ic" NAME="ByteUtilsTest.testSplitByteArrayWithPadding Coverage Results" MODIFIED="1683495381043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$MessageTest.ic" NAME="MessageTest Coverage Results" MODIFIED="1683530846063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/GRUPO11_P21$DESTest.ic" NAME="DESTest Coverage Results" MODIFIED="1683569421388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>
