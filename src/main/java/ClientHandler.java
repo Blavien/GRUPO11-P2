@@ -23,8 +23,6 @@ public class ClientHandler extends Thread {
     private static boolean dividedMessage;
     private static int dividedFinished;
 
-    private final String MAC_KEY="Mas2142SS!±";
-
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
      * done in a separate thread.
