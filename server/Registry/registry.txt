@@ -1,2 +1,2 @@
-Sara : 2
-AAD : 1
+AAAEAEA : 0
+RAEAEA : 0

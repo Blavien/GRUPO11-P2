@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -30,8 +31,8 @@ public class Client {
     private KeyPair clientKeyPair;
     private static final Scanner scan = new Scanner(System.in);
     private BigInteger sharedSecret;
-
-
+    private ArrayList<Integer> choice;       // get(0) - Hashing algorithm       get(1) - Encryption algorithm
+                                                                        //    0 - MAC    1 - Hash                   0 - AES   1 -
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -92,10 +93,54 @@ public class Client {
     public void doHandshake() throws Exception {
         serverPublicRSAKey = rsaKeyDistribution();
         sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
-        macKey=MAC.createMACKey();
-        sendMacKey();
-    }
 
+        choice = new ArrayList<Integer>(); //Array novo sempre que isto é chamado
+
+        System.out.println("\nWe will make you choose the security you want, cause I want 20.");
+
+        // choice.get(0)
+        System.out.println("\nHashing algoritm:");
+        System.out.println("0. MAC");
+        System.out.println("1. Hash");
+        int i = scan.nextInt();
+        switch (i){
+            case 0:
+                System.out.println("choose mac");
+                macKey=MAC.createMACKey();
+                choice.add(0); // [0] = 0
+                break;
+            case 1:
+                System.out.println("choose hash");
+                choice.add(1); // [0] = 1
+                break;
+        }
+        // choice.get(1)
+        System.out.println("\nEncryption/Decryption algoritm:");
+        System.out.println("0. AES");
+        System.out.println("1. 3DES");
+        i = scan.nextInt();
+        switch (i){
+            case 0:
+                System.out.println("choose AES");
+                choice.add(0); // [1] = 0
+                break;
+            case 1:
+                System.out.println("choose 3DES");
+                choice.add(1); // [1] = 1
+                break;
+
+        }
+        System.out.println(choice);
+        sendClientChoice();
+
+        if(choice.get(0) == 0){
+            sendMacKey();
+        }
+    }
+    public void sendClientChoice() throws IOException {
+        out.writeObject(choice);
+        out.flush ();
+    }
     public void endConnection() throws Exception {
         this.closeConnection();
     }
@@ -116,7 +161,7 @@ public class Client {
 
         byte[] computedDigest = MAC.generateMAC(decryptedFile, macKey);
 
-        if (!Integrity.verifyMAC(response.getSignature(), computedDigest)) {
+        if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
             throw new RuntimeException("The integrity of the message is not verified");
         }
 
@@ -136,9 +181,9 @@ public class Client {
 
                 //System.out.println(new String (decryptedFile));
 
-                computedDigest = Integrity.generateMAC(decryptedFile, String.valueOf(macKey));
+                computedDigest = MAC.generateMAC(decryptedFile, macKey);
 
-                if (!Integrity.verifyMAC(response.getSignature(), computedDigest)) {
+                if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
                     throw new RuntimeException("The integrity of the message is not verified");
                 }
 
