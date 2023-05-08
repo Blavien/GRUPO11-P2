@@ -30,7 +30,6 @@ public class ClientHandler extends Thread {
         this.client = client;
         in = new ObjectInputStream ( this.client.getInputStream ( ) );
         out = new ObjectOutputStream ( this.client.getOutputStream ( ) );
-        boolean isConnected = true; // TODO: Check if this is necessary or if it should be controlled
     }
 
     @Override
@@ -146,6 +145,9 @@ public class ClientHandler extends Thread {
             case 1:
                 System.out.print("DES ]");
                 break;
+            case 2:
+                System.out.print("3DES ]");
+                break;
         }
         System.out.println("\n");
     }
@@ -191,6 +193,9 @@ public class ClientHandler extends Thread {
         }
         if(choice.get(1) == 1){ //DES
             encryptedResponse = DES.encrypt ( content , sharedSecret );
+        }
+        if(choice.get(1) == 2){ //DES
+            encryptedResponse = DES3.encrypt ( content , sharedSecret );
         }
         byte[] digest = null;
 
@@ -274,6 +279,9 @@ public class ClientHandler extends Thread {
         }
         if(clientChoice.get(1) == 1){
             decryptedMessage = DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+        }
+        if(clientChoice.get(1) == 2){
+            decryptedMessage = DES3.decrypt ( messageObj.getMessage ( ) , sharedSecret );
         }
         // Computes the digest of the received message
         byte[] computedDigest = null;
