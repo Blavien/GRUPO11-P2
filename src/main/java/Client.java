@@ -99,7 +99,6 @@ public class Client {
         System.out.println("0. MAC");
         System.out.println("1. Hash of 512 bits (SHA - 512)");
         System.out.println("2. 2048 eggs & bacon");
-        System.out.println("3. CBC");
         int i = scan.nextInt();
         switch (i){
             case 0:
@@ -109,9 +108,6 @@ public class Client {
                 choice.add(1); // [0] = 1
                 break;
             case 2:
-                invalid_choice_hashing = true;
-                break;
-            case 3:
                 invalid_choice_hashing = true;
                 break;
         }
@@ -243,7 +239,7 @@ public class Client {
             System.out.println("This is the file content:");
 
             System.out.println(new String (unitedMessage));
-
+            String updatedMessage = (new String (unitedMessage)).replaceAll("%", "");
             saveFiles(unitedMessage);
 
         }else{
