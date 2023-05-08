@@ -88,18 +88,17 @@ public class RequestUtils {
         String client_name = request.get(0);
         File file = new File(REGISTRY_PATH);
         int request_counter = 0; //For the first request
-        boolean userFound = false;
 
         if (!file.exists()){
             file.createNewFile();
         }else {
             BufferedReader br = new BufferedReader(new FileReader(file));
+
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(" : ");
                 if (parts[0].equals(client_name)) {
                     request_counter = Integer.parseInt(parts[1]) + 1;
-                    userFound = true;
                     break;
                 }
             }
@@ -118,6 +117,7 @@ public class RequestUtils {
             }
         }
         out.close();
+
     }
     public static void emptyRegistry () throws Exception{
         //Limpa o ficheiro de execuções do programa anteriores

@@ -1,1 +1,2 @@
-Sara : 0
+Sara : 2
+ANN : 1
