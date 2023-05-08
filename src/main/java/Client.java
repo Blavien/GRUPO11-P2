@@ -29,6 +29,7 @@ public class Client {
     private PublicKey serverPublicRSAKey;
     private KeyPair clientKeyPair;
     private static final Scanner scan = new Scanner(System.in);
+    private BigInteger sharedSecret;
 
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
@@ -40,40 +41,40 @@ public class Client {
     public Client(int port) throws Exception {
         this.requestLimit = 0;
 
-      client = new Socket ( HOST , port );
+        client = new Socket ( HOST , port );
 
-      out = new ObjectOutputStream ( client.getOutputStream ( ) );
+        out = new ObjectOutputStream ( client.getOutputStream ( ) );
 
-      in = new ObjectInputStream ( client.getInputStream ( ) );
+        in = new ObjectInputStream ( client.getInputStream ( ) );
 
-      isConnected = true; // TODO: Check if this is necessary or if it should be controlled
+        isConnected = true; // TODO: Check if this is necessary or if it should be controlled
 
-      // Create a temporary directory for putting the request files
+        // Create a temporary directory for putting the request files
 
-      userDir = Files.createTempDirectory ( "fileServer" ).toFile ( ).getAbsolutePath ( );
+        userDir = Files.createTempDirectory ( "fileServer" ).toFile ( ).getAbsolutePath ( );
 
-      System.out.println ( "Temporary directory path " + userDir );
+        System.out.println ( "Temporary directory path " + userDir );
 
-      System.out.println("\nInsert your username");
-      String name = scan.next();
-      this.client_name = name;
+        System.out.println("\nInsert your username");
+        String name = scan.next();
+        this.client_name = name;
 
-      RSA.storeRSAKeys ( RSA.generateKeyPair() , client_name);
+        RSA.storeRSAKeys ( RSA.generateKeyPair() , client_name);
 
-      this.setPrivateKey();
-      this.setPublicKey();
-   }
-   public String getClientName() {
-       return client_name;
-   }
-   public void setClientName(String client_name){
-       this.client_name = client_name;
-   }
-   public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
-   public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
-   public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
-   public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
-   public void setFileName(String request){
+        this.setPrivateKey();
+        this.setPublicKey();
+    }
+    public String getClientName() {
+        return client_name;
+    }
+    public void setClientName(String client_name){
+        this.client_name = client_name;
+    }
+    public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
+    public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
+    public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
+    public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
+    public void setFileName(String request){
         this.fileName = request;
     }
 
@@ -87,6 +88,7 @@ public class Client {
 
     public void doHandshake() throws Exception {
         serverPublicRSAKey = rsaKeyDistribution();
+        sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
         RequestUtils.writeNumberToFile(1, RequestUtils.HANDSHAKE_SIGNAL);
     }
 
@@ -102,7 +104,7 @@ public class Client {
     private void processResponse(String fileName) throws Exception {
         String unitedMessage = "";
 
-        BigInteger sharedSecret = agreeOnSharedSecret(serverPublicRSAKey);
+        //BigInteger sharedSecret = agreeOnSharedSecret(serverPublicRSAKey);
 
         Message response = (Message) in.readObject();
 
@@ -150,19 +152,19 @@ public class Client {
         }
     }
 
-   public void saveFiles(String decryptedFile) throws Exception{
-       //Criação da pasta que receberá os ficheiros
-       String privateClientPath = this.client_name + "/files";
-       File privateClientFolder = new File(privateClientPath);
-       privateClientFolder.mkdirs();
+    public void saveFiles(String decryptedFile) throws Exception{
+        //Criação da pasta que receberá os ficheiros
+        String privateClientPath = this.client_name + "/files";
+        File privateClientFolder = new File(privateClientPath);
+        privateClientFolder.mkdirs();
 
-       //Criação do ficheiro de texto que receberá o conteúdo do ficheiro de texto pedido e a escrita do mesmo
-       String decryptedFileString = decryptedFile;
-       File arquivo = new File(this.client_name + "/files/User_" + this.getFileName());
-       BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
-       bw.write(decryptedFileString);
-       bw.close();
-   }
+        //Criação do ficheiro de texto que receberá o conteúdo do ficheiro de texto pedido e a escrita do mesmo
+        String decryptedFileString = decryptedFile;
+        File arquivo = new File(this.client_name + "/files/User_" + this.getFileName());
+        BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+        bw.write(decryptedFileString);
+        bw.close();
+    }
     /**
      * Closes the connection by closing the socket and the streams.
      */
@@ -194,7 +196,7 @@ public class Client {
 
     public void sendMessage ( String message ) throws Exception {
         // Agree on a shared secret
-        BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
+        // BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
         // Encrypts the message
         byte[] encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         // Generates the MAC
