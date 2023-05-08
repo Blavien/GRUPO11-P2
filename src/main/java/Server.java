@@ -29,6 +29,7 @@ public class Server implements Runnable {
 
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private int port;
 
     /**
      * Constructs a Server object by specifying the port number. The server will be then created on the specified port.
@@ -89,5 +90,11 @@ public class Server implements Runnable {
     }
 
 
+    public int getPort() {
+        return port;
+    }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
 }
