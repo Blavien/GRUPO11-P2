@@ -48,7 +48,7 @@ public class ClientHandler extends Thread {
 
 
             clientChoice = receiveClientChoice();
-            System.out.println("SERVER : Received the client's alorithms choice.");
+            System.out.print("SERVER : Client setup ");
             printClientChoice(clientChoice);
 
             if(clientChoice.get(0) == 0){
@@ -131,20 +131,21 @@ public class ClientHandler extends Thread {
         }
     }
     public void printClientChoice(ArrayList<Integer> clientChoice){
-        if(clientChoice.get(0) == 0){
-            System.out.print("[ MAC , ");
-            if(clientChoice.get(1) == 0){
-                System.out.print(" AES ]");
-            } else if (clientChoice.get(1) == 1) {
-                System.out.print(" 3DES ]");
-            }
-        }else if (clientChoice.get(0) == 1){
-            System.out.print("[ HASH , ");
-            if(clientChoice.get(1) == 0){
-                System.out.print(" AES ]");
-            } else if (clientChoice.get(1) == 1) {
-                System.out.print(" 3DES ]");
-            }
+        switch (clientChoice.get(0)) {
+            case 0:
+                System.out.print("[ MAC , ");
+                break;
+            case 1:
+                System.out.print("[ HASH , ");
+                break;
+        }
+        switch (clientChoice.get(1)) {
+            case 0:
+                System.out.print("AES ]");
+                break;
+            case 1:
+                System.out.print("DES ]");
+                break;
         }
         System.out.println("\n");
     }
@@ -187,8 +188,9 @@ public class ClientHandler extends Thread {
 
         if(choice.get(1) == 0){ //AES
             encryptedResponse = AES.encrypt ( content , sharedSecret );
-        }else if(choice.get(1) == 1){ //3DES
-            //encryptedMessage = 3DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+        }
+        if(choice.get(1) == 1){ //DES
+            encryptedResponse = DES.encrypt ( content , sharedSecret );
         }
         byte[] digest = null;
 
@@ -203,10 +205,6 @@ public class ClientHandler extends Thread {
         // Sends the encrypted message
         out.writeObject ( responseObj );
         out.flush ( );
-        // Encrypts the message
-        // AES.encrypt ( content , sharedSecret );
-        // Generates the MAC
-        //byte[] digest = MAC.generateMAC ( content, clientMACKey );
     }
 
     /**
@@ -273,8 +271,9 @@ public class ClientHandler extends Thread {
         byte[] decryptedMessage = null;
         if(clientChoice.get(1) == 0){
             decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
-        }else if(clientChoice.get(1) == 1){
-            //decryptedMessage = 3DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+        }
+        if(clientChoice.get(1) == 1){
+            decryptedMessage = DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
         }
         // Computes the digest of the received message
         byte[] computedDigest = null;
@@ -283,7 +282,8 @@ public class ClientHandler extends Thread {
             if ( ! MAC.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
                 throw new RuntimeException ( "The integrity of the message is not verified" );
             }
-        }else if (clientChoice.get(0) == 1){
+        }
+        if (clientChoice.get(0) == 1){
             //decryptedMessage = 3DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
             computedDigest = Hash.generateDigest(decryptedMessage);
             if ( ! Hash.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
