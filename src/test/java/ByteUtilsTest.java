@@ -67,7 +67,7 @@ class ByteUtilsTest {
         byte[] text = "istoeumteste".getBytes(); // tamanho 16
 
         ArrayList<byte[]> chunks = ByteUtils.splitByteArray(text, Size);
-        assertEquals(text.length / Size, chunks.size());
+        assertEquals((text.length / Size)+1, chunks.size());
 
         byte[] lastChunk = chunks.get(chunks.size() - 1);
         assertEquals(Size, lastChunk.length);

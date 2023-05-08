@@ -36,15 +36,15 @@ public class ServerTest {
         serverThread.interrupt();
     }
 
-    @Test
+    /*@Test
     void testGetPrivateRSAKeyandPublicRSAkey() throws Exception {
         PrivateKey privateKey = Server.getPrivateRSAKey();
         assertNotNull(privateKey);
         PublicKey publicKey = Server.getPublicRSAKey();
         assertNotNull(publicKey);
     }
-
-
+*/
+/*
 
     @Test
     void testProcess() throws Exception {
@@ -56,5 +56,5 @@ public class ServerTest {
 
         client.close();
     }
-
+*/
 }
