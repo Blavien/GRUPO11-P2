@@ -16,7 +16,6 @@ public class ClientHandler extends Thread {
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
     private final Socket client;
-    private final boolean isConnected;
     private ArrayList<String> requestSplit;
     private SecretKey clientMACKey;
     private ArrayList<Integer> clientChoice;
@@ -31,7 +30,7 @@ public class ClientHandler extends Thread {
         this.client = client;
         in = new ObjectInputStream ( this.client.getInputStream ( ) );
         out = new ObjectOutputStream ( this.client.getOutputStream ( ) );
-        isConnected = true; // TODO: Check if this is necessary or if it should be controlled
+        boolean isConnected = true; // TODO: Check if this is necessary or if it should be controlled
     }
 
     @Override
@@ -39,7 +38,7 @@ public class ClientHandler extends Thread {
         super.run ( );
         try {
             sleep(2000);
-            PublicKey clientPublicRSAKey = null;
+            PublicKey clientPublicRSAKey;
 
             while(RequestUtils.readNumberFromFile(RequestUtils.HANDSHAKE_SIGNAL) != 1){  }
 
@@ -49,7 +48,7 @@ public class ClientHandler extends Thread {
 
 
             clientChoice = receiveClientChoice();
-            System.out.println("SERVER : Received the client's alorithms choice.");
+            System.out.print("SERVER : Client setup ");
             printClientChoice(clientChoice);
 
             if(clientChoice.get(0) == 0){
@@ -60,7 +59,7 @@ public class ClientHandler extends Thread {
             int i = 0;
             while ( i != 5) {
 
-                byte[] message = process ( in , sharedSecret.toByteArray ( ) );
+                byte[] message = process ( in , sharedSecret.toByteArray ( ), clientChoice );
 
                 if(message != null ){
                     System.out.println("\n***** REQUEST *****\n"+ new String(message));
@@ -86,21 +85,21 @@ public class ClientHandler extends Thread {
 
                     if(contentSize>2048) {
 
-                        sendFile("INICIO".getBytes(), sharedSecret.toByteArray ());
+                        sendFile("INICIO".getBytes(), sharedSecret.toByteArray (), clientChoice);
 
                         ArrayList<byte[]> contentDividido = ByteUtils.splitByteArray(auxContent.getBytes(),2048 );
 
                         for (int j = 0; j < contentDividido.size(); j++) {
 
-                            sendFile(contentDividido.get(j), sharedSecret.toByteArray ());
+                            sendFile(contentDividido.get(j), sharedSecret.toByteArray (), clientChoice);
                             System.out.println(new String(contentDividido.get(j)));
 
                         }
-                        sendFile("FIM".getBytes(), sharedSecret.toByteArray ());
+                        sendFile("FIM".getBytes(), sharedSecret.toByteArray (), clientChoice);
                     }
                     else {
 
-                        sendFile(content, sharedSecret.toByteArray ());
+                        sendFile(content, sharedSecret.toByteArray (), clientChoice);
 
                     }
                     i = RequestUtils.requestLimit(requestSplit.get(0));
@@ -132,20 +131,21 @@ public class ClientHandler extends Thread {
         }
     }
     public void printClientChoice(ArrayList<Integer> clientChoice){
-        if(clientChoice.get(0) == 0){
-            System.out.print("[ MAC , ");
-            if(clientChoice.get(1) == 0){
-                System.out.print(" AES ]");
-            } else if (clientChoice.get(1) == 1) {
-                System.out.print(" 3DES ]");
-            }
-        }else if (clientChoice.get(0) == 1){
-            System.out.print("[ HASH , ");
-            if(clientChoice.get(1) == 0){
-                System.out.print(" AES ]");
-            } else if (clientChoice.get(1) == 1) {
-                System.out.print(" 3DES ]");
-            }
+        switch (clientChoice.get(0)) {
+            case 0:
+                System.out.print("[ MAC , ");
+                break;
+            case 1:
+                System.out.print("[ HASH , ");
+                break;
+        }
+        switch (clientChoice.get(1)) {
+            case 0:
+                System.out.print("AES ]");
+                break;
+            case 1:
+                System.out.print("DES ]");
+                break;
         }
         System.out.println("\n");
     }
@@ -183,11 +183,23 @@ public class ClientHandler extends Thread {
      *
      * @throws IOException when an I/O error occurs when sending the file
      */
-    private void sendFile ( byte[] content , byte[] sharedSecret ) throws Exception {
-        // Encrypts the message
-        byte[] encryptedResponse = AES.encrypt ( content , sharedSecret );
-        // Generates the MAC
-        byte[] digest = MAC.generateMAC ( content, clientMACKey );
+    private void sendFile ( byte[] content , byte[] sharedSecret , ArrayList<Integer> choice) throws Exception {
+        byte[] encryptedResponse = null;
+
+        if(choice.get(1) == 0){ //AES
+            encryptedResponse = AES.encrypt ( content , sharedSecret );
+        }
+        if(choice.get(1) == 1){ //DES
+            encryptedResponse = DES.encrypt ( content , sharedSecret );
+        }
+        byte[] digest = null;
+
+        if(choice.get(0) == 0){ //MAC
+            // Generates the MAC
+            digest = MAC.generateMAC ( content, clientMACKey );
+        }else if(choice.get(0) == 1){ //HASH
+            digest = Hash.generateDigest(content);
+        }
         // Creates the message object
         Message responseObj = new Message ( encryptedResponse , digest );
         // Sends the encrypted message
@@ -252,17 +264,34 @@ public class ClientHandler extends Thread {
         return DiffieHellman.computePrivateKey ( clientPublicKey , privateKey );
     }
 
-    private byte[] process ( ObjectInputStream in , byte[] sharedSecret ) throws Exception {
+    private byte[] process ( ObjectInputStream in , byte[] sharedSecret, ArrayList<Integer> clientChoice ) throws Exception {
         // Reads the message object
         Message messageObj = ( Message ) in.readObject ( );
         // Extracts and decrypt the message
-        byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
-        // Computes the digest of the received message
-        byte[] computedDigest = MAC.generateMAC ( decryptedMessage,clientMACKey );
-        // Verifies the integrity of the message
-        if ( ! MAC.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
-            throw new RuntimeException ( "The integrity of the message is not verified" );
+        byte[] decryptedMessage = null;
+        if(clientChoice.get(1) == 0){
+            decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
         }
+        if(clientChoice.get(1) == 1){
+            decryptedMessage = DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+        }
+        // Computes the digest of the received message
+        byte[] computedDigest = null;
+        if(clientChoice.get(0) == 0){
+            computedDigest = MAC.generateMAC ( decryptedMessage, clientMACKey );
+            if ( ! MAC.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
+                throw new RuntimeException ( "The integrity of the message is not verified" );
+            }
+        }
+        if (clientChoice.get(0) == 1){
+            //decryptedMessage = 3DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+            computedDigest = Hash.generateDigest(decryptedMessage);
+            if ( ! Hash.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+                throw new RuntimeException ( "The integrity of the message is not verified" );
+            }
+        }
+        // Verifies the integrity of the message
+
         return decryptedMessage;
     }
 }
