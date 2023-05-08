@@ -11,69 +11,72 @@ public class MainClient {
             boolean subAlive = true;
 
             System.out.println("\n*************** Welcome to GROUP 11 ******************************\n");
-            System.out.println("1. Start totally new session");
-            System.out.println("2. Go back to previous session");
-            System.out.println("2. Quit");
+            System.out.println("1. Start a new session");
+            System.out.println("2. Go back to a previous session");
+            System.out.println("3. Quit");
             int input = in.nextInt();
             switch(input){
                 case 1:
+                    boolean clientAlreadyExists = false;
                     Client client = new Client ( 8000 );
-
                     String name = client.getClientName();
 
-                    clients.add(client);
-
-                    Client actualClient = null;
-
+                    //Checks f client is already registered on the Registry.txt
+                    // Supostamente, se o cliente esta dentro do array clients - ele já está registado
                     for (Client client1 : clients){
                         if(client1.getClientName().equals(name)){
-                            actualClient = client1;
+                            clientAlreadyExists = true;
                         }
                     }
+                    if(clientAlreadyExists){
+                        System.out.println("You already have an account with that username. If you want a new account click 1, else click 2.");
+                    }else{
 
-                    RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 0 - Nothing
+                        clients.add(client);
 
-                    RequestUtils.newClientRegister(actualClient.getClientName()); //Register new clients
 
-                    if(RequestUtils.requestLimit(actualClient.getClientName()) == 0){   //Request counter do client == 0  - novo ou requests levou reset
+                        RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 0 - Nothing
 
-                        RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
+                        RequestUtils.newClientRegister(client.getClientName()); //Register new clients
 
-                        actualClient.doHandshake();
+                        if(RequestUtils.requestLimit(client.getClientName()) == 0){   //Request counter do client == 0  - novo ou requests levou reset
 
-                    }
-                    RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
-                    while (subAlive == true){
+                            RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
 
-                        if(RequestUtils.requestLimit(actualClient.getClientName()) == 5){
+                            client.doHandshake();
 
-                            System.out.println("\nYou have reached max requests. You will be taken to the session restart.");
-
-                            actualClient.endConnection();
-
-                            break;
                         }
+                        RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
+                        while (subAlive == true){
 
-                        System.out.println("\n*************** USER : "+actualClient.getClientName()+" *******************");
-                        System.out.println("\n"+RequestUtils.requestLimit(actualClient.getClientName())+"\n");
-                        System.out.println("\n1. Request file");
-                        System.out.println("2. End session");
-                        int req = in.nextInt();
+                            if(RequestUtils.requestLimit(client.getClientName()) == 5){
 
-                        switch (req){
-                            case 1:
-                                actualClient.execute();
+                                System.out.println("\nYou have reached max requests. You will be taken to the session restart.");
+                                clients.remove(client);
+                                client.endConnection();
                                 break;
-                            case 2:
-                                subAlive = false;
-                                break;
-                        }
-                    }
-                    break;
+                            }
 
+                            System.out.println("\n*************** USER : "+client.getClientName()+" *******************");
+                            System.out.println("\n"+RequestUtils.requestLimit(client.getClientName())+"\n");
+                            System.out.println("\n1. Request file");
+                            System.out.println("2.Go to main menu");
+                            int req = in.nextInt();
+
+                            switch (req){
+                                case 1:
+                                    client.execute();
+                                    break;
+                                case 2:
+                                    subAlive = false;
+                                    break;
+                            }
+                        }
+                        break;
+                    }
                 case 2:
-                    System.out.println("\nYou already had an acoount, you want to go back to that one.");
-                    System.out.println("\nSo ... What's you name ? ");
+                    System.out.println("\nYou already had an account, you want to go back to that one.");
+                    System.out.println("\nWhat's you name ? ");
                     String c_name = in.next();
                     boolean clientFound = false;
                     Client ourClient = null;
@@ -86,27 +89,23 @@ public class MainClient {
                     }
 
                     if(clientFound == false){
-                        System.out.println("\nSorry broski, you don't have an active client account. Go do it again.");
+                        System.out.println("\nSorry bro, we don't have an active session for that client. Go do it again.");
                         break;
                     }else{
-
-
                         while (subAlive == true){
 
                             if(RequestUtils.requestLimit(ourClient.getClientName()) == 5){
 
                                 System.out.println("\nYou have reached max requests. You will be taken to the session restart.");
-
-                                ourClient.endConnection();
-
                                 clients.remove(ourClient);
+                                ourClient.endConnection();
                                 break;
                             }
 
                             System.out.println("\n*************** USER : "+ourClient.getClientName()+" *******************");
                             System.out.println("\n"+RequestUtils.requestLimit(ourClient.getClientName())+"\n");
                             System.out.println("\n1. Request file");
-                            System.out.println("2. End session");
+                            System.out.println("2. Go to main menu");
                             int req = in.nextInt();
 
                             switch (req){

@@ -44,13 +44,11 @@ public class ClientHandler extends Thread {
 
             clientPublicRSAKey = rsaKeyDistribution ( in );
             BigInteger sharedSecret = agreeOnSharedSecret ( clientPublicRSAKey );
-
+            System.out.println("SERVER : Handshake was a sucess.");
             clientMACKey = receiveMacKey();
+            System.out.println("SERVER : MACK Key received.");
 
             int i = 0;
-
-            System.out.println("SERVER : Handshake was a sucess.");
-
             while ( i != 5) {
 
                 byte[] message = process ( in , sharedSecret.toByteArray ( ) );
@@ -71,7 +69,7 @@ public class ClientHandler extends Thread {
                     byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
 
                     String auxContent = new String(content);
-                    System.out.println("\n********* FILE ********\nHere's the file content: ");
+                    System.out.println("\n***** FILE ********\nHere's the file content: ");
                     System.out.println(auxContent);
 
                     int contentSize = content.length;
@@ -104,11 +102,11 @@ public class ClientHandler extends Thread {
             }
             if(i >= 5){
 
-                System.out.println("\n Client exceeded the max requests.");
+                System.out.println("\nClient "+requestSplit.get(0) +" exceeded the max requests.");
 
                 RequestUtils.resetRequestCounter(requestSplit.get(0));
 
-                System.out.println("Client's request counter has been reset to 0.");
+                System.out.println("Client "+requestSplit.get(0) +" request counter has been reset to 0.");
             }
 
             System.out.println("Closing socket connection.");
@@ -126,7 +124,6 @@ public class ClientHandler extends Thread {
     }
     private SecretKey receiveMacKey() throws IOException, ClassNotFoundException {
         SecretKey macKey = ( SecretKey ) in.readObject ( );
-        System.out.println("Received MAC KEY");
         return macKey;
     }
     public static List<String> splitStringBySize(String input) {

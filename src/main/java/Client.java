@@ -64,7 +64,7 @@ public class Client {
 
         this.setPrivateKey();
         this.setPublicKey();
-        macKey=MAC.createMACKey();
+
 
     }
     public String getClientName() {
@@ -92,6 +92,7 @@ public class Client {
     public void doHandshake() throws Exception {
         serverPublicRSAKey = rsaKeyDistribution();
         sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
+        macKey=MAC.createMACKey();
         sendMacKey();
     }
 
@@ -202,7 +203,6 @@ public class Client {
     private void sendMacKey() throws Exception{
         out.writeObject(macKey);
         out.flush ();
-        System.out.println("MACKEY HAS BEEN SENT");
     }
     public void sendMessage ( String message ) throws Exception {
         // Agree on a shared secret
