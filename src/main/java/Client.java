@@ -64,6 +64,7 @@ public class Client {
 
       this.setPrivateKey();
       this.setPublicKey();
+      macKey=MAC.createMACKey();
    }
    public String getClientName() {
        return client_name;
@@ -140,7 +141,7 @@ public class Client {
         // Encrypts the message
         byte[] encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         // Generates the MAC
-        byte[] digest = Integrity.generateDigest ( message.getBytes ( ) );
+        byte[] digest = Integrity.generateMAC ( message.getBytes ( ), String.valueOf(macKey));
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message

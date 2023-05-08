@@ -1,3 +1,5 @@
+import javax.crypto.SecretKey;
+import javax.print.DocFlavor;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,6 +25,8 @@ public class Server implements Runnable {
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
     private final PublicKey publicRSAKey;
+
+
     private ObjectInputStream in;
     private ObjectOutputStream out;
 

@@ -18,6 +18,8 @@ public class ClientHandler extends Thread {
     private final Socket client;
     private final boolean isConnected;
     private ArrayList<String> requestSplit;
+
+    private final String MAC_KEY="Mas2142SS!±";
     private byte[] message;
 
 
@@ -176,9 +178,9 @@ public class ClientHandler extends Thread {
         // Extracts and decrypt the message
         byte[] decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret.toByteArray ( ) );
         // Computes the digest of the received message
-        byte[] computedDigest = Integrity.generateDigest ( decryptedMessage );
+        byte[] computedDigest = Integrity.generateMAC ( decryptedMessage,MAC_KEY );
         // Verifies the integrity of the message
-        if ( ! Integrity.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+        if ( ! Integrity.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
             throw new RuntimeException ( "The integrity of the message is not verified" );
         }
         return decryptedMessage;
