@@ -34,6 +34,7 @@ public class Client {
     private static final String SHA256_ALGORITHM = "SHA-256";
     private static final String MD5_ALGORITHM = "MD5";
     private static final String SHA1_ALGORITHM = "SHA-1";
+    private boolean test;
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -41,7 +42,7 @@ public class Client {
      * @param port the port to connect to
      * @throws IOException when an I/O error occurs when creating the socket
      */
-    public Client(int port) throws Exception {
+    public Client(int port, boolean test) throws Exception {
         this.requestLimit = 0;
 
         client = new Socket ( HOST , port );
@@ -60,6 +61,9 @@ public class Client {
 
         this.setPrivateKey();
         this.setPublicKey();
+
+        this.test=test;
+
     }
     public String getClientName() {
         return client_name;
