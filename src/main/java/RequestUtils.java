@@ -56,22 +56,19 @@ public class RequestUtils {
     }
     public static void newClientRegister(String client_name) throws IOException {
         File file = new File(REGISTRY_PATH);
-        int request_counter = 0; //For the first request
         boolean userFound = false;
-
 
         BufferedReader br = new BufferedReader(new FileReader(file));
         String line;
         while ((line = br.readLine()) != null) {
             String[] parts = line.split(" : ");
             if (parts[0].equals(client_name)) {
-                request_counter = Integer.parseInt(parts[1]);
                 userFound = true;
                 break;
             }
         }
         br.close();
-        //User já existente
+
         String data = client_name + " : " + 0;
 
         if (!userFound) {   //New user, fica a 0
@@ -84,11 +81,10 @@ public class RequestUtils {
 
 
     }
-    public static void registerRequests(ArrayList<String> request) throws IOException {
+    public synchronized static void registerRequests(ArrayList<String> request) throws IOException {
         String client_name = request.get(0);
         File file = new File(REGISTRY_PATH);
         int request_counter = 0; //For the first request
-        boolean userFound = false;
 
         if (!file.exists()){
             file.createNewFile();
@@ -99,13 +95,11 @@ public class RequestUtils {
                 String[] parts = line.split(" : ");
                 if (parts[0].equals(client_name)) {
                     request_counter = Integer.parseInt(parts[1]) + 1;
-                    userFound = true;
                     break;
                 }
             }
             br.close();
         }
-
         String data = client_name + " : " + request_counter;
 
         List<String> lines = Files.readAllLines(file.toPath());
@@ -120,14 +114,12 @@ public class RequestUtils {
         out.close();
     }
     public static void emptyRegistry () throws Exception{
-        //Limpa o ficheiro de execuções do programa anteriores
         new PrintWriter(REGISTRY_PATH).close();
     }
     public static int requestLimit (String request) throws IOException{
         String client_name = request;
 
         File file = new File(REGISTRY_PATH);
-        boolean userFound = false;
         int requestCounter = 0;
 
         if (!file.exists()){
@@ -139,7 +131,6 @@ public class RequestUtils {
                 String[] parts = line.split(" : ");
                 if (parts[0].equals(client_name)) {
                     requestCounter = Integer.parseInt(parts[1]);
-                    userFound = true;
                     break;
                 }
             }
@@ -184,7 +175,7 @@ public class RequestUtils {
         writer.write(Integer.toString(number));
         writer.close();
     }
-    public static int readNumberFromFile(String filename) throws IOException {
+    public synchronized static int readNumberFromFile(String filename) throws IOException {
         File file = new File(filename);
         if (!file.exists()) {
             throw new FileNotFoundException("File number.txt does not exist");
