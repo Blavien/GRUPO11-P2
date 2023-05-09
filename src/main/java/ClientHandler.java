@@ -18,10 +18,7 @@ public class ClientHandler extends Thread {
     private final Socket client;
     private ArrayList<String> requestSplit;
     private SecretKey clientMACKey;
-    private ArrayList<Integer> clientChoice;
     private static String DIGEST_ALGORITHM ="";
-
-
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
      * done in a separate thread.
@@ -48,7 +45,7 @@ public class ClientHandler extends Thread {
             System.out.println("SERVER : Handshake was a sucess.");
 
 
-            clientChoice = receiveClientChoice();
+            ArrayList<Integer> clientChoice = receiveClientChoice();
             System.out.print("SERVER : Client setup ");
             setupClientChoice(clientChoice);
 
@@ -58,7 +55,7 @@ public class ClientHandler extends Thread {
             int i = 0;
             while ( i != 5) {
 
-                byte[] message = process ( in , sharedSecret.toByteArray ( ), clientChoice );
+                byte[] message = process ( in , sharedSecret.toByteArray ( ), clientChoice);
 
                 if(message != null ){
                     System.out.println("\n***** REQUEST *****\n"+ new String(message));
@@ -70,7 +67,6 @@ public class ClientHandler extends Thread {
                     //Regista os número de pedidos feitos por este utilizador
 
                     RequestUtils.registerRequests (requestSplit);
-
                     // Reads the file and sends it to the client
 
                     byte[] content = FileHandler.readFile ( RequestUtils.getAbsoluteFilePath ( requestSplit.get(1) ) );
@@ -86,10 +82,10 @@ public class ClientHandler extends Thread {
 
                         ArrayList<byte[]> contentDividido = ByteUtils.splitByteArray(auxContent.getBytes(),2048 );
 
-                        for (int j = 0; j < contentDividido.size(); j++) {
+                        for (byte[] bytes : contentDividido) {
 
-                            sendFile(contentDividido.get(j), sharedSecret.toByteArray (), clientChoice);
-                            System.out.println(new String(contentDividido.get(j)));
+                            sendFile(bytes, sharedSecret.toByteArray(), clientChoice);
+                            System.out.println(new String(bytes));
 
                         }
                         sendFile("FIM".getBytes(), sharedSecret.toByteArray (), clientChoice);
@@ -99,19 +95,13 @@ public class ClientHandler extends Thread {
                         sendFile(content, sharedSecret.toByteArray (), clientChoice);
 
                     }
-                    i = RequestUtils.requestLimit(requestSplit.get(0));
-
-                    //System.out.println(requestSplit.get(0)+" - Request counter: "+i);
+                    i = RequestUtils.getRequestCounter(requestSplit.get(0));
                 }
             }
-            if(i >= 5){
 
-                System.out.println("\nClient "+requestSplit.get(0) +" exceeded the max requests.");
-
-                RequestUtils.resetRequestCounter(requestSplit.get(0));
-
-                System.out.println("Client "+requestSplit.get(0) +" request counter has been reset to 0.");
-            }
+            System.out.println("\nClient "+requestSplit.get(0) +" exceeded the max requests.");
+            RequestUtils.resetRequestCounter(requestSplit.get(0));
+            System.out.println("Client "+requestSplit.get(0) +" request counter has been reset to 0.");
 
             System.out.println("Closing socket connection.");
 
@@ -128,33 +118,27 @@ public class ClientHandler extends Thread {
     }
     public void setupClientChoice(ArrayList<Integer> clientChoice){
         switch (clientChoice.get(0)) {
-            case 0:
+            case 0 -> {
                 DIGEST_ALGORITHM = "HmacSHA512";
-                System.out.print("[ SHA-512 , ");
-                break;
-            case 1:
+                System.out.print("[ " + DIGEST_ALGORITHM + ", ");
+            }
+            case 1 -> {
                 DIGEST_ALGORITHM = "HmacSHA256";
-                System.out.print("[ SHA-256 , ");
-                break;
-            case 2:
+                System.out.print("[ " + DIGEST_ALGORITHM + ", ");
+            }
+            case 2 -> {
                 DIGEST_ALGORITHM = "HmacSHA1";
-                System.out.print("[ SHA-1 , ");
-                break;
-            case 3:
+                System.out.print("[ " + DIGEST_ALGORITHM + ", ");
+            }
+            case 3 -> {
                 DIGEST_ALGORITHM = "HmacMD5";
-                System.out.print("[ MD5 , ");
-                break;
+                System.out.print("[ " + DIGEST_ALGORITHM + ", ");
+            }
         }
         switch (clientChoice.get(1)) {
-            case 0:
-                System.out.print("AES ]");
-                break;
-            case 1:
-                System.out.print("DES ]");
-                break;
-            case 2:
-                System.out.print("3DES ]");
-                break;
+            case 0 -> System.out.print("AES ]");
+            case 1 -> System.out.print("DES ]");
+            case 2 -> System.out.print("3DES ]");
         }
         System.out.println("\n");
     }
@@ -174,7 +158,7 @@ public class ClientHandler extends Thread {
             int end = 0;
 
             for (int i = 0; i < numParts; i++) {
-                end += (remainingBytes > 2048) ? 2048 : remainingBytes; // Define o final do pedaço, garantindo que não ultrapasse 2KB
+                end += Math.min(remainingBytes, 2048); // Define o final do pedaço, garantindo que não ultrapasse 2KB
                 String part = input.substring(start, end); // Extrai o pedaço da string original
                 output.add(part); // Adiciona o pedaço na lista de saída
                 start = end;
@@ -226,12 +210,10 @@ public class ClientHandler extends Thread {
         }
     }
     private SecretKey receiveMacKey() throws IOException, ClassNotFoundException {
-        SecretKey macKey = ( SecretKey ) in.readObject ( );
-        return macKey;
+        return  ( SecretKey ) in.readObject ( );
     }
     private ArrayList<Integer> receiveClientChoice () throws IOException, ClassNotFoundException {
-        ArrayList<Integer> choice = (ArrayList<Integer>) in.readObject();
-        return choice;
+        return (ArrayList<Integer>) in.readObject();
     }
     //DIFFIE HELLLMAN
     private PublicKey rsaKeyDistribution (ObjectInputStream in ) throws Exception {

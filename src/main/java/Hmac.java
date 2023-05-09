@@ -2,7 +2,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -10,27 +9,11 @@ import java.util.Arrays;
  * This class implements the generation and verification of the message digest.
  */
 public class Hmac {
-
     public static SecretKey createMACKey (String DIGEST_ALGORITHM) throws Exception{
         KeyGenerator keyGen = KeyGenerator.getInstance(DIGEST_ALGORITHM);
         SecureRandom random = new SecureRandom();
         keyGen.init(random);
-        SecretKey macKey = keyGen.generateKey();
-        return macKey;
-    }
-
-    /**
-     * Computes the message digest of the given message.
-     *
-     * @param message The message to be digested.
-     *
-     * @return the message digest
-     *
-     * @throws Exception if the message digest algorithm is not available
-     */
-    public static byte[] generateDigest ( byte[] message, String DIGEST_ALGORITHM) throws Exception {
-        MessageDigest messageDigest = MessageDigest.getInstance ( DIGEST_ALGORITHM );
-        return messageDigest.digest ( message );
+        return keyGen.generateKey();
     }
 
     /**

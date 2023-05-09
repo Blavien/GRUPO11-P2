@@ -21,8 +21,7 @@ public class RequestUtils {
      */
     public static String getAbsoluteFilePath ( String request ) {
         try {
-            String fileName = request;
-            return String.format ( SERVER_PATH_FILE_FORMAT , Server.FILE_PATH , fileName );
+            return String.format ( SERVER_PATH_FILE_FORMAT , Server.FILE_PATH , request );
         } catch ( IllegalArgumentException e ) {
             throw new IllegalArgumentException ( "Invalid request" );
         }
@@ -45,7 +44,7 @@ public class RequestUtils {
         throw new IllegalArgumentException ( "Invalid request" );
     }
 
-    public static ArrayList<String> splitRequest(String message) throws Exception{
+    public static ArrayList<String> splitRequest(String message){
         ArrayList<String> requestInfo = new ArrayList<>();
         String[] splitMessage =message.split(": ");
         //Splits to get the client name
@@ -84,22 +83,8 @@ public class RequestUtils {
     public synchronized static void registerRequests(ArrayList<String> request) throws IOException {
         String client_name = request.get(0);
         File file = new File(REGISTRY_PATH);
-        int request_counter = 0; //For the first request
+        int request_counter = getRequestCounter(client_name) +1;
 
-        if (!file.exists()){
-            file.createNewFile();
-        }else {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(" : ");
-                if (parts[0].equals(client_name)) {
-                    request_counter = Integer.parseInt(parts[1]) + 1;
-                    break;
-                }
-            }
-            br.close();
-        }
         String data = client_name + " : " + request_counter;
 
         List<String> lines = Files.readAllLines(file.toPath());
@@ -116,26 +101,21 @@ public class RequestUtils {
     public static void emptyRegistry () throws Exception{
         new PrintWriter(REGISTRY_PATH).close();
     }
-    public static int requestLimit (String request) throws IOException{
-        String client_name = request;
-
+    public static int getRequestCounter(String request) throws IOException{
         File file = new File(REGISTRY_PATH);
         int requestCounter = 0;
 
-        if (!file.exists()){
-            file.createNewFile();
-        }else {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(" : ");
-                if (parts[0].equals(client_name)) {
-                    requestCounter = Integer.parseInt(parts[1]);
-                    break;
-                }
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] parts = line.split(" : ");
+            if (parts[0].equals(request)) {
+                requestCounter = Integer.parseInt(parts[1]);
+                break;
             }
-            br.close();
         }
+        br.close();
+
         return requestCounter;
     }
     public static void resetRequestCounter(String username) throws IOException {
@@ -143,28 +123,24 @@ public class RequestUtils {
         boolean userFound = false;
         List<String> lines = new ArrayList<>();
 
-        if (!file.exists()){
-            file.createNewFile();
-        }else {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(" : ");
-                if (parts[0].equals(username)) {
-                    lines.add(parts[0] + " : 0");
-                    userFound = true;
-                } else {
-                    lines.add(line);
-                }
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] parts = line.split(" : ");
+            if (parts[0].equals(username)) {
+                lines.add(parts[0] + " : 0");
+                userFound = true;
+            } else {
+                lines.add(line);
             }
-            br.close();
         }
+        br.close();
 
         // Write the modified file
         if (userFound) {
             PrintWriter out = new PrintWriter(new FileWriter(file));
-            for (String line : lines) {
-                out.println(line);
+            for (String line2 : lines) {
+                out.println(line2);
             }
             out.close();
         }
@@ -177,10 +153,6 @@ public class RequestUtils {
     }
     public synchronized static int readNumberFromFile(String filename) throws IOException {
         File file = new File(filename);
-        if (!file.exists()) {
-            throw new FileNotFoundException("File number.txt does not exist");
-        }
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line = reader.readLine();
             return Integer.parseInt(line.trim());
