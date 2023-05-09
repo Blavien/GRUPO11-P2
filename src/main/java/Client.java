@@ -42,7 +42,7 @@ public class Client {
      * @param port the port to connect to
      * @throws IOException when an I/O error occurs when creating the socket
      */
-    public Client(int port, boolean test) throws Exception {
+    public Client(int port) throws Exception {
         this.requestLimit = 0;
 
         client = new Socket ( HOST , port );
@@ -54,7 +54,9 @@ public class Client {
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
 
         System.out.println("\nInsert your username");
-        String name = scan.next();
+        String name = scan.nextLine();
+
+
         this.client_name = name;
 
         RSA.storeRSAKeys ( RSA.generateKeyPair() , client_name);
@@ -62,7 +64,7 @@ public class Client {
         this.setPrivateKey();
         this.setPublicKey();
 
-        this.test=test;
+
 
     }
     public String getClientName() {
@@ -87,6 +89,8 @@ public class Client {
         this.isConnected = bool;
     }
 
+
+
     public boolean doHandshake() throws Exception {
         boolean handshakeInsuccess = false;
         boolean invalid_choice_hashing = false;
@@ -104,8 +108,21 @@ public class Client {
         System.out.println("4. MD5");
         System.out.println("5. 2048 eggs & bacon");
         int i = scan.nextInt();
+        System.out.println(i);
+
+        System.out.println("\nEncryption/Decryption algoritm:\n");
+        System.out.println("0. AES\n");
+        System.out.println("1. DES\n");
+        System.out.println("2. 3DES\n");
+        System.out.println("3. 360-no-scope-DES\n");
+
+        int v = scan.nextInt();
+        System.out.println(v);
+
         switch (i){
+
             case 0:
+                System.out.println("entrou no primeiro switch");
                 choice.add(0); // [0] = 0
                 break;
             case 1:
@@ -125,14 +142,12 @@ public class Client {
                 break;
         }
         // choice.get(1)
-        System.out.println("\nEncryption/Decryption algoritm:");
-        System.out.println("0. AES");
-        System.out.println("1. DES");
-        System.out.println("2. 3DES");
-        System.out.println("3. 360-no-scope-DES");
-        i = scan.nextInt();
-        switch (i){
+
+        switch (v){
+
+
             case 0:
+                System.out.println("entrou no segundo switch");
                 choice.add(0); // [1] = 0
                 break;
             case 1:
@@ -148,6 +163,7 @@ public class Client {
 
         //Faz o handshake
         if(invalid_choice_hashing == false && invalid_choice_encryption == false){
+            System.out.println("aqui if");
             serverPublicRSAKey = rsaKeyDistribution();
 
             sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
@@ -160,10 +176,13 @@ public class Client {
             if(choice.get(0) == 0){
                 sendMacKey();
             }
+
         }else{
+            System.out.println("aqui else");
             handshakeInsuccess = true;
             System.out.println("This server doesn't support those algorithms.");
         }
+        System.out.println("chegou ao fim");
         return handshakeInsuccess;
     }
     public void sendClientChoice() throws IOException {
@@ -406,12 +425,18 @@ public class Client {
      * Executes the client. It reads the file from the console and sends it to the server. It waits for the response and
      * writes the file to the temporary directory.
      */
-    public void execute() throws Exception{
+    public void execute(String test) throws Exception{
         Scanner usrInput = new Scanner ( System.in );
         if( isConnected ) {
+            String request="";
             // Reads the message to extract the path of the file
             System.out.println ( "Write the path of the file" );
-            String request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
+            if(test!=""){
+                request = "USERNAME: "+this.client_name+ ": GET : "+ test ;
+            }
+            if(test==""){
+            request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
+            }
             this.setFileName(RequestUtils.splitRequest(request).get(1));
             // Request the file
             sendMessage ( request );

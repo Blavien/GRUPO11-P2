@@ -18,7 +18,7 @@ public class MainClient {
             switch(input){
                 case 1:
                     boolean clientAlreadyExists = false;
-                    Client client = new Client ( 8000 ,false);
+                    Client client = new Client ( 8000 );
                     String name = client.getClientName();
 
                     //Checks f client is already registered on the Registry.txt
@@ -70,7 +70,7 @@ public class MainClient {
 
                             switch (req){
                                 case 1:
-                                    client.execute();
+                                    client.execute("");
                                     break;
                                 case 2:
                                     subAlive = false;
@@ -115,7 +115,7 @@ public class MainClient {
 
                             switch (req){
                                 case 1:
-                                    ourClient.execute();
+                                    ourClient.execute("");
                                     break;
                                 case 2:
                                     subAlive = false;
