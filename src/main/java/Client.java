@@ -2,11 +2,8 @@ import javax.crypto.SecretKey;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -31,10 +28,7 @@ public class Client {
     private static final Scanner scan = new Scanner(System.in);
     private BigInteger sharedSecret;
     private ArrayList<Integer> choice;       // get(0) - Hashing algorithm       get(1) - Encryption algorithm
-    private static final String SHA512_ALGORITHM = "SHA-512";
-    private static final String SHA256_ALGORITHM = "SHA-256";
-    private static final String MD5_ALGORITHM = "MD5";
-    private static final String SHA1_ALGORITHM = "SHA-1";
+    private static String DIGEST_ALGORITHM = "";
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -70,8 +64,6 @@ public class Client {
     }
     public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
     public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
-    public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
-    public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
     public void setFileName(String request){
         this.fileName = request;
     }
@@ -93,36 +85,40 @@ public class Client {
         System.out.println("\nWe will make you set up your commmunication and security, cause I want 20.");
 
         // choice.get(0)
-        System.out.println("\nHashing algoritm:");
-        System.out.println("0. MAC");
-        System.out.println("1. SHA-512");
-        System.out.println("2. SHA-256");
-        System.out.println("3. SHA-1");
-        System.out.println("4. MD5");
-        System.out.println("5. 2048 eggs & bacon");
+        System.out.println("\nHashing algoritms:");
+        System.out.println("0. SHA-512");
+        System.out.println("1. SHA-256");
+        System.out.println("2. SHA-1");
+        System.out.println("3. MD5");
+        System.out.println("4. 2048 eggs & bacon");
+        System.out.println("5. EFFICIENCY IS OVERRATED");
         int i = scan.nextInt();
         switch (i){
             case 0:
+                DIGEST_ALGORITHM = "HmacSHA512";
                 choice.add(0); // [0] = 0
                 break;
             case 1:
+                DIGEST_ALGORITHM = "HmacSHA256";
                 choice.add(1); // [0] = 1
                 break;
             case 2:
+                DIGEST_ALGORITHM = "HmacSHA1";
                 choice.add(2); // [0] = 2
                 break;
             case 3:
+                DIGEST_ALGORITHM = "HmacMD5";
                 choice.add(3); // [0] = 3
                 break;
             case 4:
-                choice.add(4); // [0] = 4
+                invalid_choice_hashing = true;
                 break;
             case 5:
                 invalid_choice_hashing = true;
                 break;
         }
         // choice.get(1)
-        System.out.println("\nEncryption/Decryption algoritm:");
+        System.out.println("\nEncryption/Decryption algoritms:");
         System.out.println("0. AES");
         System.out.println("1. DES");
         System.out.println("2. 3DES");
@@ -149,14 +145,12 @@ public class Client {
 
             sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
 
-            macKey=MAC.createMACKey();
+            this.macKey = Hmac.createMACKey(DIGEST_ALGORITHM);
 
-            //System.out.println(choice);
             sendClientChoice();
 
-            if(choice.get(0) == 0){
-                sendMacKey();
-            }
+            sendMacKey();
+
         }else{
             handshakeInsuccess = true;
             System.out.println("This server doesn't support those algorithms.");
@@ -193,49 +187,19 @@ public class Client {
             decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
         }
         //HASHING
-        byte[] computedDigest = null;
+        byte[] computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
+        if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {
+                throw new RuntimeException("The integrity of the message is not verified");
 
-        if(choice.get(0) == 0) {
-            computedDigest = MAC.generateMAC(decryptedFile, macKey);
-            if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
-                throw new RuntimeException("The integrity of the message is not verified");
-            }
         }
-        if(choice.get(0) == 1){
-            computedDigest = Hash.generateDigest(decryptedFile, SHA512_ALGORITHM);
-            if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                throw new RuntimeException("The integrity of the message is not verified");
-            }
-        }
-        if(choice.get(0) == 2){
-            computedDigest = Hash.generateDigest(decryptedFile,SHA256_ALGORITHM);
-            if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                throw new RuntimeException("The integrity of the message is not verified");
-            }
-        }
-        if(choice.get(0) == 3){
-            computedDigest = Hash.generateDigest(decryptedFile,SHA1_ALGORITHM);
-            if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                throw new RuntimeException("The integrity of the message is not verified");
-            }
-        }
-        if(choice.get(0) == 4){
-            computedDigest = Hash.generateDigest(decryptedFile,MD5_ALGORITHM);
-            if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                throw new RuntimeException("The integrity of the message is not verified");
-            }
-        }
-
         String decryptedContent = new String(decryptedFile);  // To handle divided content
 
         if (decryptedContent.equals("INICIO")) { //Decrypts this first message - INICIO
 
-            //System.out.println("Recebeu o inicio");
-
             while (!decryptedContent.equals("FIM")){ //Decrypts the rest of the message until we get the last message - FIM
 
                 response = (Message) in.readObject();
-                //CRYPTO
+                //CRYPTO $$
                 if(choice.get(1) == 0) {
                     decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
                 }
@@ -245,36 +209,11 @@ public class Client {
                 if(choice.get(1) == 2){
                     decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
                 }
+
                 //HASHING
-                if(choice.get(0) == 0) {
-                    computedDigest = MAC.generateMAC(decryptedFile, macKey);
-                    if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
-                }
-                if(choice.get(0) == 1){
-                    computedDigest = Hash.generateDigest(decryptedFile, SHA512_ALGORITHM);
-                    if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
-                }
-                if(choice.get(0) == 2){
-                    computedDigest = Hash.generateDigest(decryptedFile,SHA256_ALGORITHM);
-                    if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
-                }
-                if(choice.get(0) == 3){
-                    computedDigest = Hash.generateDigest(decryptedFile,SHA1_ALGORITHM);
-                    if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
-                }
-                if(choice.get(0) == 4){
-                    computedDigest = Hash.generateDigest(decryptedFile,MD5_ALGORITHM);
-                    if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
+                computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
+                if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {
+                    throw new RuntimeException("The integrity of the message is not verified");
                 }
 
                 decryptedContent = new String(decryptedFile);
@@ -282,7 +221,6 @@ public class Client {
                 if(!decryptedContent.equals("FIM")) {
                     unitedMessage += new String(decryptedFile);
                 }
-
             }
             System.out.println("We have reached the end of the file content.");
 
@@ -362,24 +300,8 @@ public class Client {
             encryptedMessage = DES3.encrypt(message.getBytes(), sharedSecret.toByteArray());
         }
 
-        byte[] digest = null;
+        byte[] digest = Hmac.hmac(message.getBytes ( ), DIGEST_ALGORITHM,macKey.getEncoded());
 
-        if(choice.get(0) == 0){ //MAC
-            // Generates the MAC
-            digest = MAC.generateMAC(message.getBytes ( ), macKey);
-        }
-        if(choice.get(0) == 1){ //HASH
-            digest = Hash.generateDigest(message.getBytes ( ), SHA512_ALGORITHM);
-        }
-        if(choice.get(0) == 2){ //HASH
-            digest = Hash.generateDigest(message.getBytes ( ), SHA256_ALGORITHM);
-        }
-        if(choice.get(0) == 3){ //HASH
-            digest = Hash.generateDigest(message.getBytes ( ), SHA1_ALGORITHM);
-        }
-        if(choice.get(0) == 4){ //HASH
-            digest = Hash.generateDigest(message.getBytes ( ), MD5_ALGORITHM);
-        }
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message
