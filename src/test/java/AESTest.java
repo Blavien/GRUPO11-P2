@@ -29,7 +29,7 @@ class AESTest {
         void testEncryptDecrypt() throws Exception {
 
             byte[] encrypted = Crypto.encrypt(message, secretKey);
-
+            byte[] decrypted = Crypto.decrypt(encrypted, secretKey);
             assertNotEquals(message, encrypted);
 
         }

@@ -19,8 +19,12 @@ public class ClientHandler extends Thread {
     private ArrayList<String> requestSplit;
     private SecretKey clientMACKey;
     private ArrayList<Integer> clientChoice;
+    private static final String SHA512_ALGORITHM = "SHA-512";
+    private static final String SHA256_ALGORITHM = "SHA-256";
+    private static final String MD5_ALGORITHM = "MD5";
+    private static final String SHA1_ALGORITHM = "SHA-1";
 
-    private static String completo;
+
     /**
      * Creates a ClientHandler object by specifying the socket to communicate with the client. All the processing is
      * done in a separate thread.
@@ -136,7 +140,16 @@ public class ClientHandler extends Thread {
                 System.out.print("[ MAC , ");
                 break;
             case 1:
-                System.out.print("[ HASH , ");
+                System.out.print("[ SHA-512 , ");
+                break;
+            case 2:
+                System.out.print("[ SHA-256 , ");
+                break;
+            case 3:
+                System.out.print("[ SHA-1 , ");
+                break;
+            case 4:
+                System.out.print("[ MD5 , ");
                 break;
         }
         switch (clientChoice.get(1)) {
@@ -203,8 +216,18 @@ public class ClientHandler extends Thread {
         if(choice.get(0) == 0){ //MAC
             // Generates the MAC
             digest = MAC.generateMAC ( content, clientMACKey );
-        }else if(choice.get(0) == 1){ //HASH
-            digest = Hash.generateDigest(content);
+        }
+        if(choice.get(0) == 1){ //HASH
+            digest = Hash.generateDigest(content, SHA512_ALGORITHM);
+        }
+        if(choice.get(0) == 2){ //HASH
+            digest = Hash.generateDigest(content,SHA256_ALGORITHM);
+        }
+        if(choice.get(0) == 3){ //HASH
+            digest = Hash.generateDigest(content,SHA1_ALGORITHM);
+        }
+        if(choice.get(0) == 4){ //HASH
+            digest = Hash.generateDigest(content,MD5_ALGORITHM);
         }
         // Creates the message object
         Message responseObj = new Message ( encryptedResponse , digest );
@@ -274,7 +297,6 @@ public class ClientHandler extends Thread {
         // Reads the message object
         Message messageObj = ( Message ) in.readObject ( );
         // Extracts and decrypt the message
-
         byte[] decryptedMessage = null;
         if(clientChoice.get(1) == 0){
             decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
@@ -287,6 +309,7 @@ public class ClientHandler extends Thread {
         }
         // Computes the digest of the received message
         byte[] computedDigest = null;
+
         if(clientChoice.get(0) == 0){
             computedDigest = MAC.generateMAC ( decryptedMessage, clientMACKey );
             if ( ! MAC.verifyMAC ( messageObj.getSignature ( ) , computedDigest ) ) {
@@ -294,21 +317,30 @@ public class ClientHandler extends Thread {
             }
         }
         if (clientChoice.get(0) == 1){
-            //decryptedMessage = 3DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
-            computedDigest = Hash.generateDigest(decryptedMessage);
+            computedDigest = Hash.generateDigest(decryptedMessage,SHA512_ALGORITHM);
             if ( ! Hash.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
                 throw new RuntimeException ( "The integrity of the message is not verified" );
             }
         }
-        // Verifies the integrity of the message
-        setMessageTest(decryptedMessage);
-        return decryptedMessage;
-    }
-    private void setMessageTest(byte[] ola){
-        completo = new String(ola);
+        if (clientChoice.get(0) == 2){
+            computedDigest = Hash.generateDigest(decryptedMessage,SHA256_ALGORITHM);
+            if ( ! Hash.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+                throw new RuntimeException ( "The integrity of the message is not verified" );
+            }
+        }
+        if (clientChoice.get(0) == 3){
+            computedDigest = Hash.generateDigest(decryptedMessage, SHA1_ALGORITHM);
+            if ( ! Hash.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+                throw new RuntimeException ( "The integrity of the message is not verified" );
+            }
+        }
+        if (clientChoice.get(0) == 4){
+            computedDigest = Hash.generateDigest(decryptedMessage, MD5_ALGORITHM);
+            if ( ! Hash.verifyDigest ( messageObj.getSignature ( ) , computedDigest ) ) {
+                throw new RuntimeException ( "The integrity of the message is not verified" );
+            }
+        }
 
-    }
-    public static String getMessageTest(){
-        return completo;
+        return decryptedMessage;
     }
 }
