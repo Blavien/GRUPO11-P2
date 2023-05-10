@@ -53,11 +53,9 @@ public class RequestUtils {
         ArrayList<String> requestInfo = new ArrayList<>();
         String[] splitMessage =message.split(": ");
         //Splits to get the client name
-        System.out.println(splitMessage[1]);
         requestInfo.add(splitMessage[1]);
 
         //Splits to get the request file
-        System.out.println(splitMessage[3]);
         requestInfo.add(splitMessage[3]);
         return requestInfo;
     }
