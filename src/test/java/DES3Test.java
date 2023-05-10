@@ -1,10 +1,11 @@
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DES3Test {
-
+@DisplayName("tests the encryption/decryption of DES3")
     @Test
     void testEncryptDecrypt() throws Exception {
         byte[] message = "Hello World".getBytes();

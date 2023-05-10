@@ -1,7 +1,10 @@
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+
 import static org.junit.Assert.*;
 
 public class DESTest {
+    @DisplayName("tests the encryption/decryption of DES")
 
     @Test
     public void testEncryptAndDecrypt() throws Exception {

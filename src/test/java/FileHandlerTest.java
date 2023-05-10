@@ -1,13 +1,13 @@
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 class FileHandlerTest {
-
-
-    @Test
+    @DisplayName("Tests if the file is being created and the content aswell")
+@Test
     void testWriteAndReadFile() throws IOException {
         String filePath = "src/test/resources/test.txt";
         String expectedContent = "This is a test file.";

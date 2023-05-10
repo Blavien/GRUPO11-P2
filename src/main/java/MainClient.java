@@ -5,6 +5,14 @@ import java.util.Scanner;
 public class MainClient {
     private static final Scanner in = new Scanner(System.in);
     private static ArrayList<Client> clients = new ArrayList<>();
+
+    /**
+     *
+     * This main is used to create the client and allow to the created clients to interact with the server between the options
+     * they choose
+     *
+     * @throws Exception
+     */
     public static void main ( String[] args ) throws Exception {
         boolean mainAlive = true;
         RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 0 - Nothing

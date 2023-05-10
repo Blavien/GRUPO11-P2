@@ -1,4 +1,6 @@
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
@@ -7,6 +9,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DiffieHellmanTest {
+    @DisplayName("tests the creation of privateKeys")
 
     @Test
     public void testGeneratePrivateKey() throws NoSuchAlgorithmException {
@@ -15,7 +18,7 @@ public class DiffieHellmanTest {
 
         assertNotEquals(privateKey1, privateKey2);
     }
-
+    @DisplayName("tests the creation of publicKeys")
     @Test
     public void testGeneratePublicKey() throws NoSuchAlgorithmException {
         BigInteger privateKey = DiffieHellman.generatePrivateKey();
@@ -24,7 +27,7 @@ public class DiffieHellmanTest {
 
         assertTrue(publicKey.compareTo(BigInteger.ZERO) > 0);
     }
-
+@DisplayName("verifies if the sharedSecret is the same")
     @Test
     public void testComputePrivateKey() throws NoSuchAlgorithmException {
         BigInteger privateKey1 = DiffieHellman.generatePrivateKey();

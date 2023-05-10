@@ -1,4 +1,6 @@
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+
 import static org.junit.Assert.*;
 
 public class MainServerTest {
@@ -7,7 +9,7 @@ public class MainServerTest {
 
     public MainServerTest() throws Exception {
     }
-
+@DisplayName("Tests if the serverThread is being initialized")
     @Test
     public void testServerThreadStarts() throws Exception {
         RequestUtils.emptyRegistry();

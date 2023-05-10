@@ -47,7 +47,7 @@ public class Server implements Runnable {
     }
 
     /**
-     *
+     * generates a private key for the server, using the RSA class
      * @return Server private RSA Key
      * @throws Exception Exception
      */
@@ -56,8 +56,8 @@ public class Server implements Runnable {
     }
 
     /**
-     *
-     * @return Server Public RSSA Key
+     * generates a public key for the server, using the RSA class
+     * @return Server Public RSA Key
      * @throws Exception Exception
      */
     public static PublicKey getPublicRSAKey() throws Exception {
@@ -104,7 +104,7 @@ public class Server implements Runnable {
     }
 
     /**
-     *
+     * returns the server port when called
      * @return server port
      */
     public int getPort() {
@@ -112,7 +112,7 @@ public class Server implements Runnable {
     }
 
     /**
-     *  Sets
+     *  Sets a new port when called
      * @param port server port
      */
     public void setPort(int port) {

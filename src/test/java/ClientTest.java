@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClientTest {
+    @DisplayName("tests set and get methods from client")
     @Test
     void setGetClientName() throws Exception {
         Server server = new Server ( 8200 );
@@ -40,7 +42,7 @@ class ClientTest {
         System.setIn(sysInBackup);
     }
 
-
+@DisplayName("Tests set and get privateKey")
     @Test
     void setGetPrivateKey() throws Exception {
         Server server = new Server ( 8201 );
@@ -59,7 +61,7 @@ class ClientTest {
 
         System.setIn(sysInBackup);
     }
-
+@DisplayName("Tests set and get publicKey")
     @Test
     void setGetPublicKey() throws Exception {
         Server server = new Server ( 8202 );
@@ -80,7 +82,7 @@ class ClientTest {
     }
 
 
-
+@DisplayName("Tests set and get publicKey")
     @Test
     void setGetFileName() throws Exception {
         Server server = new Server ( 8205 );
@@ -99,13 +101,11 @@ class ClientTest {
 
     }
 
-    //pgtar se posso remover o setConnected
-    @Test
-    void setConnected() {
-    }
 
 
-    //nao faço
+
+
+    @DisplayName("This method tests the doHandshake method")
     @Test
     void doHandshake() throws Exception {
         Server server = new Server ( 8230 );
@@ -128,7 +128,7 @@ class ClientTest {
 
     }
 
-
+@DisplayName("saveFiles tests if the method saveFiles is working properly, if the files are being created and the information is getting written")
     @Test
     void saveFiles() throws Exception {
         Server server = new Server ( 8400 );
@@ -157,7 +157,15 @@ class ClientTest {
         System.setIn(sysInBackup);
 
     }
-
+@DisplayName("This tests pretty much all the most necessary methods")
+/**
+ * This test simulates a whole situation, since the request of the client, that request is encrypted and decrypted properly
+ * otherwise the output wouldn't be the right one, then it reacts to the request generating a response, after the response,
+ * it verifies if the files received from the server have the right content, the creation of the files are already
+ * tested in a previous method, but this method uses a good quantity of methods, testing the client-side and the server-side
+ * using the input and the verification of the steps are being done correctly.
+ *
+ */
     @Test
     void sendRequestAndWritingFile() throws Exception {
         Server server = new Server ( 8700 );
