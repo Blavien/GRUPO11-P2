@@ -64,29 +64,77 @@ public class Client {
 
 
     }
+
+    /**
+     * Returns the client's name defined when it was initialized
+     * @return Returns the client's name
+     */
     public String getClientName() {
         return client_name;
     }
+
+    /**
+     * changes the client's name for whatever string is called as parameter
+     * @param client_name the new client name that will be defined
+     */
     public void setClientName(String client_name){
         this.client_name = client_name;
     }
+
+    /**
+     * sets the private key calling a method from RSA and changes the local privateKey variable
+     * @throws Exception
+     */
     public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
+
+    /**
+     * sets the public key calling a method from RSA and changes the local publicKey variable
+     * @throws Exception
+     */
     public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
+
+    /**
+     * returns the client(local) privateKey
+     * @return client privateKey
+     * @throws Exception
+     */
     public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
+    /**
+     * returns the client(local) publicKey
+     * @return client publicKey
+     * @throws Exception
+     */
     public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
+
+    /**
+     * changes the name of the file that will be accessed by server or written in console
+     * @param request new name of the file
+     */
     public void setFileName(String request){
         this.fileName = request;
     }
 
+    /**
+     * Returns the name of the file that will be accessed by server or written in console
+     * @return the name of the current file that will be used, as explained above
+     */
     public String getFileName() {
         return this.fileName;
     }
 
+    /**
+     * Sets the connection
+     * @param bool the boolean value of the connection
+     */
     public void setConnected(boolean bool) {
         this.isConnected = bool;
     }
 
-
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
 
     public boolean doHandshake() throws Exception {
         boolean handshakeInsuccess = false;
@@ -371,13 +419,7 @@ public class Client {
     }
 
 
-    public String getClient_name() {
-        return client_name;
-    }
 
-    public void setClient_name(String client_name) {
-        this.client_name = client_name;
-    }
 
 
 }
