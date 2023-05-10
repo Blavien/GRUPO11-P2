@@ -20,11 +20,6 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClientTest {
-
-
-
-
-
     @Test
     void setGetClientName() throws Exception {
         Server server = new Server ( 8200 );
@@ -132,9 +127,6 @@ class ClientTest {
 
 
     }
-
-
-
 
 
     @Test

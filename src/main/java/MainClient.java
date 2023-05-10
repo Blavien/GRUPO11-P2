@@ -7,6 +7,7 @@ public class MainClient {
     private static ArrayList<Client> clients = new ArrayList<>();
     public static void main ( String[] args ) throws Exception {
         boolean mainAlive = true;
+        RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 0 - Nothing
         while (mainAlive){
             boolean subAlive = true;
             boolean handshakeInsuccess = false;
@@ -21,8 +22,8 @@ public class MainClient {
                     Client client = new Client ( 8000 );
                     String name = client.getClientName();
 
-                    //Checks f client is already registered on the Registry.txt
-                    // Supostamente, se o cliente esta dentro do array clients - ele já está registado
+                    //Checks if client is already registered on the Registry.txt
+                    // Supostamente, se o cliente esta dentro do array clients - ele já está registado, e com uma sessão ativa
                     for (Client client1 : clients){
                         if (client1.getClientName().equals(name)) {
                             clientAlreadyExists = true;
@@ -30,12 +31,11 @@ public class MainClient {
                         }
                     }
                     if(clientAlreadyExists){
-                        System.out.println("You already have an account with that username. If you want a new account click 1, else click 2.");
+                        System.out.println("You already have an account with that username. If you want a new account click 1 and use a different username, else click 2.");
+                        break;
                     }else{
 
                         clients.add(client);
-
-                        RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 0 - Nothing
 
                         if(RequestUtils.getRequestCounter(client.getClientName()) == 0){   //Request counter do client == 0  - novo ou requests levou reset
 
@@ -50,14 +50,13 @@ public class MainClient {
                             break;
                         }
 
-                        RequestUtils.newClientRegister(client.getClientName()); //Fica registado se o hadnshake foi um sucesso
-
-                        RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // 1 - Handshake
+                        RequestUtils.newClientRegister(client.getClientName()); //Fica registado se o handshake foi um sucesso
+                        RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // Handshake was done, so it goes back to 0, so it's ready for antoher client
                         while (subAlive){
 
-                            if(RequestUtils.getRequestCounter(client.getClientName()) == 5){
+                            if(RequestUtils.getRequestCounter(client.getClientName()) == 5){ //Keeping up with the server
 
-                                System.out.println("\nYou have reached max requests. You will be taken to the session restart.");
+                                System.out.println("\nYou have reached max requests. You will be taken to restart your session.");
                                 clients.remove(client);
                                 client.endConnection();
                                 break;
@@ -77,8 +76,8 @@ public class MainClient {
                         break;
                     }
                 case 2:
-                    System.out.println("\nYou already had an account, you want to go back to that one.");
-                    System.out.println("\nWhat's you name ? ");
+                    System.out.println("\nYou already have an account, you want to go back to that one.");
+                    System.out.println("\nWhat's yo name ? ");
                     String c_name = in.next();
                     boolean clientFound = false;
                     Client ourClient = null;
@@ -89,16 +88,15 @@ public class MainClient {
                             clientFound = true;
                         }
                     }
-
                     if(!clientFound){
                         System.out.println("\nSorry bro, we don't have an active session for that client. Go do it again.");
                         break;
                     }else{
                         while (subAlive){
 
-                            if(RequestUtils.getRequestCounter(ourClient.getClientName()) == 5){
+                            if(RequestUtils.getRequestCounter(ourClient.getClientName()) == 5){ //Keeping up with the server
 
-                                System.out.println("\nYou have reached max requests. You will be taken to the session restart.");
+                                System.out.println("\nYou have reached max requests. You will be taken to restart your session.");
                                 clients.remove(ourClient);
                                 ourClient.endConnection();
                                 break;

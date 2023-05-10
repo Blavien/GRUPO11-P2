@@ -51,7 +51,7 @@ public class Client {
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
 
         System.out.println("\nInsert your username");
-        String name = scan.nextLine();
+        String name = scan.next();
 
 
         this.client_name = name;
@@ -111,7 +111,7 @@ public class Client {
         System.out.println("0. AES\n");
         System.out.println("1. DES\n");
         System.out.println("2. 3DES\n");
-        System.out.println("3. 360-no-scope-DES\n");
+        System.out.println("3. 360-no-scope-DEES\n");
 
         int v = scan.nextInt();
         System.out.println(v);
@@ -178,10 +178,20 @@ public class Client {
         }
         return handshakeInsuccess;
     }
+
+    /**
+     * Send teh array with the client's security set up, hashing and encryption/decryption algorithms
+     * @throws IOException
+     */
     public void sendClientChoice() throws IOException {
         out.writeObject(choice);
         out.flush ();
     }
+
+    /**
+     *  useless function, but it's to call this client's closeConnection() method
+     * @throws Exception
+     */
     public void endConnection() throws Exception {
         this.closeConnection();
     }
@@ -198,16 +208,17 @@ public class Client {
         Message response = (Message) in.readObject();
         byte[] decryptedFile = null;
         //CRYPTO
-        if(choice.get(1) == 0) {
-            decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+        switch (choice.get(1)){
+            case 0:
+                decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                break;
+            case 1:
+                decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                break;
+            case 2:
+                decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                break;
         }
-        if(choice.get(1) == 1){
-            decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-        }
-        if(choice.get(1) == 2){
-            decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
-        }
-
 
 
         //HASHING
@@ -225,14 +236,16 @@ public class Client {
 
                 response = (Message) in.readObject();
                 //CRYPTO $$
-                if(choice.get(1) == 0) {
-                    decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-                }
-                if(choice.get(1) == 1){
-                    decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-                }
-                if(choice.get(1) == 2){
-                    decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                switch (choice.get(1)){
+                    case 0:
+                        decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                        break;
+                    case 1:
+                        decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                        break;
+                    case 2:
+                        decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                        break;
                 }
 
                 //HASHING
@@ -265,6 +278,11 @@ public class Client {
         }
     }
 
+    /**
+     *
+     * @param decryptedFile File that has been sent by the server
+     * @throws Exception exception
+     */
     public void saveFiles(String decryptedFile) throws Exception{
         //Criação da pasta que receberá os ficheiros
         String privateClientPath = this.client_name + "/files";
@@ -291,10 +309,20 @@ public class Client {
         }
     }
 
+    /**
+     *
+     * @param publicKey Client's DH public key
+     * @throws Exception exception
+     */
     private void sendPublicDHKey ( byte[] publicKey ) throws Exception {
         out.writeObject ( publicKey );
     }
 
+    /**
+     *
+     * @return  Returns the server key
+     * @throws Exception exception
+     */
     private PublicKey rsaKeyDistribution ( ) throws Exception {
         // Sends the public key
         sendPublicRSAKey ( );
@@ -302,29 +330,45 @@ public class Client {
         return ( PublicKey ) in.readObject ( );
     }
 
+    /**
+     * Sends RSA public Key
+     * @throws IOException ioexception
+     */
     private void sendPublicRSAKey ( ) throws IOException {
         out.writeObject ( publicKey );
         out.flush ( );
     }
+
+    /**
+     *  Sends the client Mac Key to the server, so it can verify the integrity and authenticity
+     * @throws Exception
+     */
     private void sendMacKey() throws Exception{
         out.writeObject(macKey);
         out.flush ();
     }
+
+    /**
+     *
+     * @param message Message being sent to the server
+     * @throws Exception If any error occurs during this function it will throw an exception
+     */
     public void sendMessage ( String message ) throws Exception {
         // Agree on a shared secret
         // BigInteger sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
         // Encrypts the message
         byte[] encryptedMessage = null;
-        if(choice.get(1) == 0){ //AES
-            encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+        switch (choice.get(1)){
+            case 0:
+                encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+                break;
+            case 1:
+                encryptedMessage = DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+                break;
+            case 2:
+                encryptedMessage = DES3.encrypt(message.getBytes(), sharedSecret.toByteArray());
+                break;
         }
-        if(choice.get(1) == 1){ //DES
-            encryptedMessage = DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
-        }
-        if(choice.get(1) == 2){
-            encryptedMessage = DES3.encrypt(message.getBytes(), sharedSecret.toByteArray());
-        }
-
         byte[] digest = Hmac.hmac(message.getBytes ( ), DIGEST_ALGORITHM,macKey.getEncoded());
 
         // Creates the message object
@@ -334,6 +378,12 @@ public class Client {
         out.flush();
 
     }
+
+    /**
+     * @param serverPublicRSAKey    Server's key that was shared though the handshake
+     * @return  a shared shecret, that is going to be used to encrypt & decrypt
+     * @throws Exception exception
+     */
     private BigInteger agreeOnSharedSecret (PublicKey serverPublicRSAKey ) throws Exception {
         // Generates a private key
         BigInteger privateDHKey = DiffieHellman.generatePrivateKey ( );
@@ -370,11 +420,18 @@ public class Client {
         }
     }
 
-
+    /**
+     *
+     * @return this client's name
+     */
     public String getClient_name() {
         return client_name;
     }
 
+    /**
+     * Sets this
+     * @param client_name client name
+     */
     public void setClient_name(String client_name) {
         this.client_name = client_name;
     }

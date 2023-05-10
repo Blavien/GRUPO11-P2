@@ -33,6 +33,21 @@ public class ClientHandler extends Thread {
 
     /**
      *
+     * This creates a thread for every client that connects to the server
+     * The client signals the server/clientHandler that it wants to do the Handshake
+     * And while the reading isn't done, because it might fail and read null, it stays stuck on that while loop
+     *
+     * It does the handshake() and agrees on the shared secret that can be used for the encryption/decryption
+     * Receives the clientChoice(), the array that contains the Hashing & Encryption algorithms
+     * Receives the unique Mac Key that's going to be used for the hashing, so it guarantees the authenticity and integrity of the message. This key is redone every 5 requests.
+     *
+     * Now we have a while loop that's to control the 5 requests, sure we could've made this is a way mroe effecient way but we got no time for that. It registers on the Registry.txt every request done by every Client
+     * RequestSplit() gives us info about the request done by the client, and the client username
+     *
+     * Then we have another requisite, if the message is too big we split it into smaller chunks and pad it, to be sent to the client.
+     *
+     * After the 5 requests are done, this thread dies, and the client disconnects.
+     *
      */
     @Override
     public void run ( ) {
@@ -122,7 +137,7 @@ public class ClientHandler extends Thread {
 
     /**
      *
-     * @param clientChoice Receives an arraylist named clientChoice that contains the encryption method that was choosed
+     * @param clientChoice Receives an arraylist named clientChoice that contains the encryption method that was choosen
      *                     by the user.
      */
     public void setupClientChoice(ArrayList<Integer> clientChoice){
@@ -164,14 +179,16 @@ public class ClientHandler extends Thread {
     private void sendFile ( byte[] content , byte[] sharedSecret , ArrayList<Integer> choice) throws Exception {
         byte[] encryptedResponse = null;
 
-        if(choice.get(1) == 0){ //AES
-            encryptedResponse = AES.encrypt ( content , sharedSecret );
-        }
-        if(choice.get(1) == 1){ //DES
-            encryptedResponse = DES.encrypt ( content , sharedSecret );
-        }
-        if(choice.get(1) == 2){ //DES
-            encryptedResponse = DES3.encrypt ( content , sharedSecret );
+        switch (choice.get(1)){
+            case 0:
+                encryptedResponse = AES.encrypt ( content , sharedSecret );
+                break;
+            case 1:
+                encryptedResponse = DES.encrypt ( content , sharedSecret );
+                break;
+            case 2:
+                encryptedResponse = DES3.encrypt ( content , sharedSecret );
+                break;
         }
 
         byte[] digest = Hmac.hmac(content, DIGEST_ALGORITHM,clientMACKey.getEncoded());
@@ -280,14 +297,17 @@ public class ClientHandler extends Thread {
         // Extracts and decrypt the message
 
         byte[] decryptedMessage = null;
-        if(clientChoice.get(1) == 0){
-            decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
-        }
-        if(clientChoice.get(1) == 1){
-            decryptedMessage = DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
-        }
-        if(clientChoice.get(1) == 2){
-            decryptedMessage = DES3.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+
+        switch (clientChoice.get(1)){
+            case 0:
+                decryptedMessage = AES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+                break;
+            case 1:
+                decryptedMessage = DES.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+                break;
+            case 2:
+                decryptedMessage = DES3.decrypt ( messageObj.getMessage ( ) , sharedSecret );
+                break;
         }
 
         // Computes the digest of the received message
