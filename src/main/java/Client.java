@@ -155,11 +155,11 @@ public class Client {
         int i = scan.nextInt();
         System.out.println(i);
 
-        System.out.println("\nEncryption/Decryption algoritm:\n");
-        System.out.println("0. AES\n");
-        System.out.println("1. DES\n");
-        System.out.println("2. 3DES\n");
-        System.out.println("3. 360-no-scope-DEES\n");
+        System.out.println("\nEncryption/Decryption algoritm:");
+        System.out.println("0. AES");
+        System.out.println("1. DES");
+        System.out.println("2. 3DES");
+        System.out.println("3. 360-no-scope-DEES");
 
         int v = scan.nextInt();
         System.out.println(v);

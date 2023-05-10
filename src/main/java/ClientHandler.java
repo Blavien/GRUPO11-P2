@@ -190,7 +190,6 @@ public class ClientHandler extends Thread {
                 encryptedResponse = DES3.encrypt ( content , sharedSecret );
                 break;
         }
-
         byte[] digest = Hmac.hmac(content, DIGEST_ALGORITHM,clientMACKey.getEncoded());
         // Creates the message object
         Message responseObj = new Message ( encryptedResponse , digest );
