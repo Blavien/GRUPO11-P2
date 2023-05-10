@@ -20,6 +20,7 @@ public class Client {
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
     private boolean isConnected;
+
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -206,6 +207,9 @@ public class Client {
         if(choice.get(1) == 2){
             decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
         }
+
+
+
         //HASHING
         byte[] computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
         if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {
@@ -364,6 +368,15 @@ public class Client {
             // Waits for the response
             processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
         }
+    }
+
+
+    public String getClient_name() {
+        return client_name;
+    }
+
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
     }
 
 
