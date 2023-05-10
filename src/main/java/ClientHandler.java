@@ -31,6 +31,9 @@ public class ClientHandler extends Thread {
         out = new ObjectOutputStream ( this.client.getOutputStream ( ) );
     }
 
+    /**
+     *
+     */
     @Override
     public void run ( ) {
         super.run ( );
@@ -116,6 +119,12 @@ public class ClientHandler extends Thread {
 
         }
     }
+
+    /**
+     *
+     * @param clientChoice Receives an arraylist named clientChoice that contains the encryption method that was choosed
+     *                     by the user.
+     */
     public void setupClientChoice(ArrayList<Integer> clientChoice){
         switch (clientChoice.get(0)) {
             case 0 -> {
@@ -143,31 +152,7 @@ public class ClientHandler extends Thread {
         System.out.println("\n");
     }
 
-    public static List<String> splitStringBySize(String input) {
-        List<String> output = new ArrayList<>();
 
-        // Verifica o tamanho da string em bytes
-        int inputSize = input.getBytes().length;
-
-        if (inputSize <= 2048) { // Se o tamanho for menor ou igual a 2KB, adiciona a string inteira na lista de saída
-            output.add(input);
-        } else { // Caso contrário, divide a string em pedaços de no máximo 2KB
-            int numParts = (int) Math.ceil((double) inputSize / 2048); // Calcula o número de pedaços necessários
-            int remainingBytes = inputSize;
-            int start = 0;
-            int end = 0;
-
-            for (int i = 0; i < numParts; i++) {
-                end += Math.min(remainingBytes, 2048); // Define o final do pedaço, garantindo que não ultrapasse 2KB
-                String part = input.substring(start, end); // Extrai o pedaço da string original
-                output.add(part); // Adiciona o pedaço na lista de saída
-                start = end;
-                remainingBytes = inputSize - end;
-            }
-        }
-
-        return output;
-    }
 
     /**
      * Sends the file to the client
@@ -209,12 +194,34 @@ public class ClientHandler extends Thread {
             throw new RuntimeException ( e );
         }
     }
+
+    /**
+     * MacKey is going to be sent by the side of the client and it will be returned read and returned in this function
+     * @return MacKey that was readed
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private SecretKey receiveMacKey() throws IOException, ClassNotFoundException {
         return  ( SecretKey ) in.readObject ( );
     }
+
+    /**
+     *  The Arraylist containing the choices of the decryption methods chosen by the user will be written as an object by the
+     *  user, this method simply reads it and returns it.
+     * @return Arraylist containing the choices of the user decryption method
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private ArrayList<Integer> receiveClientChoice () throws IOException, ClassNotFoundException {
         return (ArrayList<Integer>) in.readObject();
     }
+
+    /**
+     * This method is used to receive the public key of the user
+     * @param in InputStream that ables the server to read the key sent by the user as an object
+     * @return Returns the public key that was read
+     * @throws Exception
+     */
     //DIFFIE HELLLMAN
     private PublicKey rsaKeyDistribution (ObjectInputStream in ) throws Exception {
         // Extract the public key
@@ -223,10 +230,16 @@ public class ClientHandler extends Thread {
         sendPublicRSAKey ( );
         return senderPublicRSAKey;
     }
+
+    /**
+     *Sends the server's public key as an object
+     * @throws Exception
+     */
     private void sendPublicRSAKey ( ) throws Exception {
         out.writeObject ( Server.getPublicRSAKey());
         out.flush ( );
     }
+
 
     private void sendPublicDHKey ( BigInteger publicKey ) throws Exception {
         out.writeObject ( RSA.encryptRSA ( publicKey.toByteArray ( ) , Server.getPrivateRSAKey()));
@@ -251,6 +264,15 @@ public class ClientHandler extends Thread {
         // Generates the shared secret
         return DiffieHellman.computePrivateKey ( clientPublicKey , privateKey );
     }
+
+    /**
+     *
+     * @param in
+     * @param sharedSecret
+     * @param clientChoice
+     * @return
+     * @throws Exception
+     */
 
     private byte[] process ( ObjectInputStream in , byte[] sharedSecret, ArrayList<Integer> clientChoice ) throws Exception {
         // Reads the message object
