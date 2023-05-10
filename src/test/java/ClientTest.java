@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.*;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -173,9 +173,9 @@ class ClientTest {
         InputStream sysInBackup = System.in;
 
         serverThread.start ( );
-        String initialString = "francisco\n0\n0";
-        InputStream targetStream = IOUtils.toInputStream(initialString);
-        System.setIn(targetStream);
+        ByteArrayInputStream in = new ByteArrayInputStream("francisco\n0\n0".getBytes());
+
+        System.setIn(in);
         Client client = new Client ( 8700);
 
         RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL);
