@@ -44,6 +44,11 @@ public class RequestUtils {
         throw new IllegalArgumentException ( "Invalid request" );
     }
 
+    /**
+     *
+     * @param message it's the message that client sent to the server with the followng information USERNAME : name: GET : file.txt
+     * @return ArrayList with 2 elements, username and request
+     */
     public static ArrayList<String> splitRequest(String message){
         ArrayList<String> requestInfo = new ArrayList<>();
         String[] splitMessage =message.split(": ");
@@ -56,6 +61,12 @@ public class RequestUtils {
         requestInfo.add(splitMessage[3]);
         return requestInfo;
     }
+
+    /**
+     *
+     * @param client_name Uses the client anme to search for the requests counter
+     * @throws IOException
+     */
     public static void newClientRegister(String client_name) throws IOException {
         File file = new File(REGISTRY_PATH);
         boolean userFound = false;
@@ -83,6 +94,12 @@ public class RequestUtils {
 
 
     }
+
+    /**
+     * Registers teh requests on the Registry.txt
+     * @param request receives the array with the username and request done by the client
+     * @throws IOException IOException
+     */
     public synchronized static void registerRequests(ArrayList<String> request) throws IOException {
         String client_name = request.get(0);
         File file = new File(REGISTRY_PATH);
@@ -101,9 +118,21 @@ public class RequestUtils {
         }
         out.close();
     }
+
+    /**
+     * Cleans the file when the server starts up
+     * @throws Exception
+     */
     public static void emptyRegistry () throws Exception{
         new PrintWriter(REGISTRY_PATH).close();
     }
+
+    /**
+     * Gets the value of the request counter, trhoguh the client name
+     * @param request client name
+     * @return  int with the number of requests done
+     * @throws IOException IOException
+     */
     public static int getRequestCounter(String request) throws IOException{
         File file = new File(REGISTRY_PATH);
         int requestCounter = 0;
@@ -121,6 +150,12 @@ public class RequestUtils {
 
         return requestCounter;
     }
+
+    /**
+     * Coloca o request counter a 0
+     * @param username nome do cliente
+     * @throws IOException IOException
+     */
     public static void resetRequestCounter(String username) throws IOException {
         File file = new File(REGISTRY_PATH);
         boolean userFound = false;
@@ -148,12 +183,26 @@ public class RequestUtils {
             out.close();
         }
     }
-    public static void writeNumberToFile(int number, String filename) throws Exception {
+
+    /**
+     *
+     * @param number Flag para assinalar o DH
+     * @param filename Nome do ficheiro - handshake_signal.txt
+     * @throws Exception Exception
+     */
+    public static synchronized void writeNumberToFile(int number, String filename) throws Exception {
         File file = new File(filename);
         FileWriter writer = new FileWriter(file);
         writer.write(Integer.toString(number));
         writer.close();
     }
+
+    /**
+     * Flag para assinalar o DH
+     * @param filename handshake_signal.txt
+     * @return valor lido
+     * @throws IOException IOException
+     */
     public synchronized static int readNumberFromFile(String filename) throws IOException {
         File file = new File(filename);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {

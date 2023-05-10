@@ -17,6 +17,10 @@ public class Message implements Serializable {
         this.signature = signature;
     }
 
+    /**
+     *
+     * @param message message
+     */
     public Message ( byte[] message  ) {
         this.message = message;
 
@@ -30,6 +34,11 @@ public class Message implements Serializable {
     public byte[] getMessage ( ) {
         return message;
     }
+
+    /**
+     *
+     * @return signature
+     */
     public byte[] getSignature ( ) {
         return signature;
     }

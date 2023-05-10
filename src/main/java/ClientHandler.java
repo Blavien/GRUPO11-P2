@@ -248,15 +248,17 @@ public class ClientHandler extends Thread {
     }
 
     /**
-     *Sends the server's public key as an object
+     * Sends the server's public key
      * @throws Exception
      */
     private void sendPublicRSAKey ( ) throws Exception {
         out.writeObject ( Server.getPublicRSAKey());
         out.flush ( );
     }
-
-
+    /**
+     * Sends the server's DH key
+     * @throws Exception
+     */
     private void sendPublicDHKey ( BigInteger publicKey ) throws Exception {
         out.writeObject ( RSA.encryptRSA ( publicKey.toByteArray ( ) , Server.getPrivateRSAKey()));
     }
@@ -289,7 +291,6 @@ public class ClientHandler extends Thread {
      * @return
      * @throws Exception
      */
-
     private byte[] process ( ObjectInputStream in , byte[] sharedSecret, ArrayList<Integer> clientChoice ) throws Exception {
         // Reads the message object
         Message messageObj = ( Message ) in.readObject ( );

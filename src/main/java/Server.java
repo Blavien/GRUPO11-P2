@@ -45,12 +45,28 @@ public class Server implements Runnable {
         this.publicRSAKey = keyPair.getPublic();
         RSA.storeRSAKeys(keyPair,server_name);
     }
+
+    /**
+     *
+     * @return Server private RSA Key
+     * @throws Exception Exception
+     */
     public static PrivateKey getPrivateRSAKey() throws Exception {
         return RSA.getPrivateKey(server_name);
     }
+
+    /**
+     *
+     * @return Server Public RSSA Key
+     * @throws Exception Exception
+     */
     public static PublicKey getPublicRSAKey() throws Exception {
         return RSA.getPublicKey(server_name);
     }
+
+    /**
+     * For every client connected to the server, it creates a thread - ClientHandler'  that will die when the client does 5 requests
+     */
     @Override
     public void run ( ) {
         try {
@@ -87,11 +103,18 @@ public class Server implements Runnable {
         }
     }
 
-
+    /**
+     *
+     * @return server port
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     *  Sets
+     * @param port server port
+     */
     public void setPort(int port) {
         this.port = port;
     }

@@ -9,6 +9,12 @@ import java.util.Arrays;
  * This class implements the generation and verification of the message digest.
  */
 public class Hmac {
+    /**
+     * Generates MAC key to be used in hashin
+     * @param DIGEST_ALGORITHM Algortihm used for the key
+     * @return  SecretKey pair
+     * @throws Exception exception
+     */
     public static SecretKey createMACKey (String DIGEST_ALGORITHM) throws Exception{
         KeyGenerator keyGen = KeyGenerator.getInstance(DIGEST_ALGORITHM);
         SecureRandom random = new SecureRandom();
@@ -28,6 +34,14 @@ public class Hmac {
         return Arrays.equals ( digest , computedDigest );
     }
 
+    /**
+     *
+     * @param message message that's gonnna be hashed
+     * @param DIGEST_ALGORITHM Algorithm that's going be used
+     * @param key Mac Key shared between client and server
+     * @return returns the hash of the mac
+     * @throws Exception exception
+     */
     public static byte[] hmac (byte[] message, String DIGEST_ALGORITHM, byte[] key)throws Exception{
         SecretKey secretKeySpec = new SecretKeySpec(key , DIGEST_ALGORITHM);
         Mac mac = Mac.getInstance(DIGEST_ALGORITHM);

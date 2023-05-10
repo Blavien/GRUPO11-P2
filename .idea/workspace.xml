@@ -4,7 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="75ea87d5-b57d-45a4-9edf-2445a379a4bb" name="Changes" comment="add : Algoritmos de Hashing SHA-256, SHA-1 e MD5 adicionados" />
+    <list default="true" id="75ea87d5-b57d-45a4-9edf-2445a379a4bb" name="Changes" comment="Integrity test">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/My/private/privateKey.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sara/files/User_A.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/francisco/private/privateKey.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ro/private/privateKey.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rw/private/privateKey.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/Registry/registry.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/Registry/registry.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/DES.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DES.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/DES3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DES3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Hmac.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Hmac.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/RequestUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RequestUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/u1/private/privateKey.key" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,9 +40,10 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev-Felicidade" />
+        <entry key="$PROJECT_DIR$" value="dev-Sara3" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -88,7 +111,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Server">
+  <component name="RunManager" selected="Application.Client">
     <configuration name="Client" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="MainClient" />
       <module name="text-file-server" />
@@ -326,7 +349,28 @@
       <option name="project" value="LOCAL" />
       <updated>1683746062994</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="add : Algoritmos de Hashing SHA-256, SHA-1 e MD5 adicionados">
+      <created>1683746321561</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1683746321561</updated>
+    </task>
+    <task id="LOCAL-00030" summary="code cleanup + javadoc + bug fix">
+      <created>1683748770370</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1683748770370</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Integrity test">
+      <created>1683749164917</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1683749164917</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -354,8 +398,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="add: Encrytion/Decryption Algorithms added - AES, RSA, HMACSHA256, Diffie-Hellman, ByteUtils for byte[] manipulation." />
-    <MESSAGE value="&lt;feat&gt; (RSA,Client) :  Requisito 2.1 feito. Geração das keyPairs e armazenamento das mesmas. Teste feito nas chaves e estão correctas." />
     <MESSAGE value="&lt;feat&gt; (MAC, Digest) :  Geração de chaves únicas, Criação de um HashMap para manter registo dos requests dos clientes" />
     <MESSAGE value="&lt;fix&gt; (RSA) : Correção do nome das chaves públicas" />
     <MESSAGE value="&lt;feat&gt; (RSA) : Armazenamento das chaves do servidor" />
@@ -379,6 +421,8 @@
     <MESSAGE value="feat : Requisito extra - Adicionei o 3DES" />
     <MESSAGE value="fix : working" />
     <MESSAGE value="add : Algoritmos de Hashing SHA-256, SHA-1 e MD5 adicionados" />
-    <option name="LAST_COMMIT_MESSAGE" value="add : Algoritmos de Hashing SHA-256, SHA-1 e MD5 adicionados" />
+    <MESSAGE value="code cleanup + javadoc + bug fix" />
+    <MESSAGE value="Integrity test" />
+    <option name="LAST_COMMIT_MESSAGE" value="Integrity test" />
   </component>
 </project>
