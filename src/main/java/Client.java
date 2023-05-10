@@ -71,6 +71,8 @@ public class Client {
     }
     public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
     public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
+    public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
+    public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
     public void setFileName(String request){
         this.fileName = request;
     }
@@ -102,6 +104,17 @@ public class Client {
         System.out.println("4. 2048 eggs & bacon");
         System.out.println("5. EFFICIENCY IS OVERRATED");
         int i = scan.nextInt();
+        System.out.println(i);
+
+        System.out.println("\nEncryption/Decryption algoritm:\n");
+        System.out.println("0. AES\n");
+        System.out.println("1. DES\n");
+        System.out.println("2. 3DES\n");
+        System.out.println("3. 360-no-scope-DES\n");
+
+        int v = scan.nextInt();
+        System.out.println(v);
+
         switch (i){
             case 0:
                 DIGEST_ALGORITHM = "HmacSHA512";
@@ -127,13 +140,10 @@ public class Client {
                 break;
         }
         // choice.get(1)
-        System.out.println("\nEncryption/Decryption algoritms:");
-        System.out.println("0. AES");
-        System.out.println("1. DES");
-        System.out.println("2. 3DES");
-        System.out.println("3. 360-no-scope-DES");
-        i = scan.nextInt();
-        switch (i){
+
+        switch (v){
+
+
             case 0:
                 choice.add(0); // [1] = 0
                 break;

@@ -97,7 +97,7 @@ class ClientTest {
 
     }
 
-//pgtar se posso remover o setConnected
+    //pgtar se posso remover o setConnected
     @Test
     void setConnected() {
     }
@@ -142,10 +142,10 @@ class ClientTest {
         client.setClientName("joao");
         client.setFileName("boatarde.txt");
         client.saveFiles("aqui");
-            Path pasta = Paths.get(client.getClientName() + "/files");
-            //testa se os diretórios foram criados
-            assertTrue(Files.exists(pasta));
-            assertTrue (Files.isDirectory(pasta));
+        Path pasta = Paths.get(client.getClientName() + "/files");
+        //testa se os diretórios foram criados
+        assertTrue(Files.exists(pasta));
+        assertTrue (Files.isDirectory(pasta));
 
         Path path = Paths.get("joao" + "/files/User_" + client.getFileName());
         byte[] bytesArquivo = Files.readAllBytes(path);
