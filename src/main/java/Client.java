@@ -186,6 +186,9 @@ public class Client {
         if(choice.get(1) == 2){
             decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
         }
+
+
+
         //HASHING
         byte[] computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
         if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {

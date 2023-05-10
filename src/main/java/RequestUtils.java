@@ -48,9 +48,9 @@ public class RequestUtils {
         ArrayList<String> requestInfo = new ArrayList<>();
         String[] splitMessage =message.split(": ");
         //Splits to get the client name
-        requestInfo.add(splitMessage[1]);
+        requestInfo.add(splitMessage[0]);
         //Splits to get the request file
-        requestInfo.add(splitMessage[3]);
+        requestInfo.add(splitMessage[2]);
         return requestInfo;
     }
     public static void newClientRegister(String client_name) throws IOException {
