@@ -3,10 +3,10 @@ name: Build package, documentation, and test coverage
 on:
   pull_request:
     branches:
-      - dev-Felicidade
+      - final
   push:
     branches:
-      - dev-Felicidade
+      - final
 
 jobs:
   build:
