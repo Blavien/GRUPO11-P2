@@ -2,8 +2,11 @@ import javax.crypto.SecretKey;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -47,13 +50,18 @@ public class Client {
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
 
         System.out.println("\nInsert your username");
-        String name = scan.next();
+        String name = scan.nextLine();
+
+
         this.client_name = name;
 
         RSA.storeRSAKeys ( RSA.generateKeyPair() , client_name);
 
         this.setPrivateKey();
         this.setPublicKey();
+
+
+
     }
     public String getClientName() {
         return client_name;
@@ -74,6 +82,8 @@ public class Client {
     public void setConnected(boolean bool) {
         this.isConnected = bool;
     }
+
+
 
     public boolean doHandshake() throws Exception {
         boolean handshakeInsuccess = false;
@@ -146,6 +156,7 @@ public class Client {
 
             this.macKey = Hmac.createMACKey(DIGEST_ALGORITHM);
 
+            //System.out.println(choice);
             sendClientChoice();
 
             sendMacKey();
@@ -191,6 +202,7 @@ public class Client {
                 throw new RuntimeException("The integrity of the message is not verified");
 
         }
+
         String decryptedContent = new String(decryptedFile);  // To handle divided content
 
         if (decryptedContent.equals("INICIO")) { //Decrypts this first message - INICIO
@@ -324,12 +336,18 @@ public class Client {
      * Executes the client. It reads the file from the console and sends it to the server. It waits for the response and
      * writes the file to the temporary directory.
      */
-    public void execute() throws Exception{
+    public void execute(String test) throws Exception{
         Scanner usrInput = new Scanner ( System.in );
         if( isConnected ) {
+            String request="";
             // Reads the message to extract the path of the file
             System.out.println ( "Write the path of the file" );
-            String request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
+            if(test!=""){
+                request = "USERNAME: "+this.client_name+ ": GET : "+ test ;
+            }
+            if(test==""){
+            request = "USERNAME: "+this.client_name+ ": "+usrInput.nextLine ( );
+            }
             this.setFileName(RequestUtils.splitRequest(request).get(1));
             // Request the file
             sendMessage ( request );

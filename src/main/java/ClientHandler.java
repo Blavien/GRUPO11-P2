@@ -35,7 +35,7 @@ public class ClientHandler extends Thread {
     public void run ( ) {
         super.run ( );
         try {
-            sleep(2000);
+
             PublicKey clientPublicRSAKey;
 
             while(RequestUtils.readNumberFromFile(RequestUtils.HANDSHAKE_SIGNAL) != 1){  }

@@ -1,9 +1,10 @@
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MainClient {
     private static final Scanner in = new Scanner(System.in);
-    private static final ArrayList<Client> clients = new ArrayList<>();
+    private static ArrayList<Client> clients = new ArrayList<>();
     public static void main ( String[] args ) throws Exception {
         boolean mainAlive = true;
         while (mainAlive){
@@ -17,7 +18,7 @@ public class MainClient {
             switch(input){
                 case 1:
                     boolean clientAlreadyExists = false;
-                    Client client = new Client ( 8000);
+                    Client client = new Client ( 8000 );
                     String name = client.getClientName();
 
                     //Checks f client is already registered on the Registry.txt
