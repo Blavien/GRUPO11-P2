@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServerTest {
-    Server server = new Server ( 8000 );
+    Server server = new Server ( 8001 );
     Thread serverThread = new Thread ( server );
 
     ServerTest() throws Exception {

@@ -1,0 +1,44 @@
+<changelist name="Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]" date="1683659537485" recycled="false" toDelete="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 09/05/2023 20:12 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/ClientHandler.class" />
+    <option name="AFTER_PATH" value="target/classes/ClientHandler.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/ClientHandler.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/test-classes/RequestUtilsTest.class" />
+    <option name="AFTER_PATH" value="target/test-classes/RequestUtilsTest.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/RequestUtilsTest.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="aa/private/privateKey.key" />
+    <option name="AFTER_PATH" value="aa/private/privateKey.key" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/privateKey.key" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="ro/private/privateKey.key" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/privateKey1.key" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Server_G11/private/privateKey.key" />
+    <option name="AFTER_PATH" value="Server_G11/private/privateKey.key" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/privateKey2.key" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/test-classes/AESTest.class" />
+    <option name="AFTER_PATH" value="target/test-classes/AESTest.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/AESTest.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/Digest.class" />
+    <option name="AFTER_PATH" value="target/classes/Digest.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/Digest.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="rw/private/privateKey.key" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_09_05_2023_20_12_[Changes]/privateKey3.key" />
+  </binary>
+</changelist>

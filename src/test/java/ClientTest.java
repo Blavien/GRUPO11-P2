@@ -14,20 +14,21 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import org.apache.commons.io.IOUtils;
+
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClientTest {
-    Server server = new Server ( 8000 );
-    Thread serverThread = new Thread ( server );
 
 
-    ClientTest() throws Exception {
-    }
+
+
 
     @Test
     void setGetClientName() throws Exception {
+        Server server = new Server ( 8200 );
+        Thread serverThread = new Thread ( server );
         serverThread.start ( );
 
         InputStream sysInBackup = System.in;
@@ -35,7 +36,7 @@ class ClientTest {
         System.setIn(in);
 
 
-        Client client = new Client ( 8000);
+        Client client = new Client ( 8200);
         assertEquals("francisco",client.getClientName());
 
 
@@ -47,6 +48,8 @@ class ClientTest {
 
     @Test
     void setGetPrivateKey() throws Exception {
+        Server server = new Server ( 8201 );
+        Thread serverThread = new Thread ( server );
         serverThread.start ( );
 
         InputStream sysInBackup = System.in;
@@ -54,7 +57,7 @@ class ClientTest {
         System.setIn(in);
 
 
-        Client client = new Client ( 8000);
+        Client client = new Client ( 8201);
         PrivateKey bomdiaKey = RSA.getPrivateKey(client.getClientName());
         client.setPrivateKey();
         assertEquals(bomdiaKey, client.getPrivateKey());
@@ -64,6 +67,8 @@ class ClientTest {
 
     @Test
     void setGetPublicKey() throws Exception {
+        Server server = new Server ( 8202 );
+        Thread serverThread = new Thread ( server );
         serverThread.start ( );
 
         InputStream sysInBackup = System.in;
@@ -71,7 +76,7 @@ class ClientTest {
         System.setIn(in);
 
 
-        Client client = new Client ( 8000);
+        Client client = new Client ( 8202);
         PublicKey bomdiaKey = RSA.getPublicKey(client.getClientName());
         client.setPublicKey();
         assertEquals(bomdiaKey, client.getPublicKey());
@@ -83,13 +88,15 @@ class ClientTest {
 
     @Test
     void setGetFileName() throws Exception {
+        Server server = new Server ( 8205 );
+        Thread serverThread = new Thread ( server );
         serverThread.start ( );
 
         InputStream sysInBackup = System.in;
         ByteArrayInputStream in = new ByteArrayInputStream("francisco".getBytes());
         System.setIn(in);
 
-        Client client = new Client ( 8000);
+        Client client = new Client ( 8205);
         client.setFileName("ola");
         assertEquals("ola", client.getFileName());
 
@@ -97,7 +104,7 @@ class ClientTest {
 
     }
 
-//pgtar se posso remover o setConnected
+    //pgtar se posso remover o setConnected
     @Test
     void setConnected() {
     }
@@ -106,7 +113,8 @@ class ClientTest {
     //nao faço
     @Test
     void doHandshake() throws Exception {
-
+        Server server = new Server ( 8230 );
+        Thread serverThread = new Thread ( server );
         serverThread.start ( );
 
         InputStream sysInBackup = System.in;
@@ -115,7 +123,7 @@ class ClientTest {
 
 
 
-        Client client = new Client ( 8000);
+        Client client = new Client ( 8230);
         assertEquals("francisco", client.getClientName());
         RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL);
         assertEquals(false,client.doHandshake());
@@ -131,21 +139,22 @@ class ClientTest {
 
     @Test
     void saveFiles() throws Exception {
-
+        Server server = new Server ( 8400 );
+        Thread serverThread = new Thread ( server );
         serverThread.start ( );
 
         InputStream sysInBackup = System.in;
         ByteArrayInputStream in = new ByteArrayInputStream("francisco".getBytes());
         System.setIn(in);
 
-        Client client = new Client ( 8000);
+        Client client = new Client ( 8400);
         client.setClientName("joao");
         client.setFileName("boatarde.txt");
         client.saveFiles("aqui");
-            Path pasta = Paths.get(client.getClientName() + "/files");
-            //testa se os diretórios foram criados
-            assertTrue(Files.exists(pasta));
-            assertTrue (Files.isDirectory(pasta));
+        Path pasta = Paths.get(client.getClientName() + "/files");
+        //testa se os diretórios foram criados
+        assertTrue(Files.exists(pasta));
+        assertTrue (Files.isDirectory(pasta));
 
         Path path = Paths.get("joao" + "/files/User_" + client.getFileName());
         byte[] bytesArquivo = Files.readAllBytes(path);
@@ -159,14 +168,15 @@ class ClientTest {
 
     @Test
     void sendRequestAndWritingFile() throws Exception {
-
+        Server server = new Server ( 8700 );
+        Thread serverThread = new Thread ( server );
         InputStream sysInBackup = System.in;
 
         serverThread.start ( );
-        String initialString = "francisco\n0\n0";
-        InputStream targetStream = IOUtils.toInputStream(initialString);
-        System.setIn(targetStream);
-        Client client = new Client ( 8000);
+        ByteArrayInputStream in = new ByteArrayInputStream("francisco\n0\n0".getBytes());
+
+        System.setIn(in);
+        Client client = new Client ( 8700);
 
         RequestUtils.writeNumberToFile(1,RequestUtils.HANDSHAKE_SIGNAL);
 

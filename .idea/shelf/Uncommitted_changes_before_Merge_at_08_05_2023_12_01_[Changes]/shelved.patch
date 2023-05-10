@@ -1,0 +1,95 @@
+Index: src/test/java/ServerTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/ServerTest.java b/src/test/java/ServerTest.java
+new file mode 100644
+--- /dev/null	(date 1683543706813)
++++ b/src/test/java/ServerTest.java	(date 1683543706813)
+@@ -0,0 +1,60 @@
++import org.junit.jupiter.api.*;
++import static org.junit.jupiter.api.Assertions.*;
++
++import java.io.*;
++import java.net.*;
++import java.security.*;
++
++public class ServerTest {
++
++    private static int PORT = 8081;
++    private Thread serverThread;
++    private Socket client;
++    private PrivateKey privateRSAKey;
++    private PublicKey publicRSAKey;
++    private ServerSocket server;
++
++
++    @BeforeEach
++    void setUp() throws Exception {
++        // Fecha o socket se já estiver aberto
++        try {
++
++             server = new ServerSocket ( PORT );
++            KeyPair keyPair = RSA.generateKeyPair();
++            this.privateRSAKey = keyPair.getPrivate();
++            this.publicRSAKey = keyPair.getPublic();
++            RSA.storeRSAKeys(keyPair,"Server_G11");
++            String server_name = "Server_G11";
++        } catch (IOException e) {
++            // Ignora exceção se o socket não estiver aberto
++        }
++    }
++
++    @AfterEach
++    void tearDown() throws Exception {
++        serverThread.interrupt();
++    }
++
++    @Test
++    void testGetPrivateRSAKeyandPublicRSAkey() throws Exception {
++        PrivateKey privateKey = Server.getPrivateRSAKey();
++        assertNotNull(privateKey);
++        PublicKey publicKey = Server.getPublicRSAKey();
++        assertNotNull(publicKey);
++    }
++
++
++
++    @Test
++    void testProcess() throws Exception {
++        Socket client = server.accept ( );
++        ClientHandler clientHandler = new ClientHandler(server.accept());
++        clientHandler.start();
++         String response="teste";
++            assertEquals("received test message", response);
++
++        client.close();
++    }
++
++}
+Index: src/test/java/IntegrityTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/IntegrityTest.java b/src/test/java/IntegrityTest.java
+new file mode 100644
+--- /dev/null	(date 1683543706812)
++++ b/src/test/java/IntegrityTest.java	(date 1683543706812)
+@@ -0,0 +1,14 @@
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class IntegrityTest {
++
++    @Test
++    void generateMAC() {
++    }
++
++    @Test
++    void verifyMAC() {
++    }
++}
+\ No newline at end of file

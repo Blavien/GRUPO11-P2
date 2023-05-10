@@ -6,7 +6,7 @@ import java.util.Arrays;
  */
 public class Digest {
 
-    private static final String DIGEST_ALGORITHM = "SHA-512";
+    private static final String DIGEST_ALGORITHM = "HmacSHA-512";
 
     /**
      * Computes the message digest of the given message.

@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Merge_at_08_05_2023_12_01_[Changes]" date="1683543739611" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_08_05_2023_12_01_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 08/05/2023 12:01 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="Nome/private/privateKey.key" />
+    <option name="AFTER_PATH" value="Nome/private/privateKey.key" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_08_05_2023_12_01_[Changes]/privateKey.key" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Server_G11/private/privateKey.key" />
+    <option name="AFTER_PATH" value="Server_G11/private/privateKey.key" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_08_05_2023_12_01_[Changes]/privateKey1.key" />
+  </binary>
+</changelist>
