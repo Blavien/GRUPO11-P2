@@ -70,7 +70,7 @@ public class MainClient {
                             int req = in.nextInt();
 
                             switch (req) {
-                                case 1 -> client.execute();
+                                case 1 -> client.execute("");
                                 case 2 -> subAlive = false;
                             }
                         }
@@ -111,7 +111,7 @@ public class MainClient {
                             int req = in.nextInt();
 
                             switch (req) {
-                                case 1 -> ourClient.execute();
+                                case 1 -> ourClient.execute("");
                                 case 2 -> subAlive = false;
                             }
                         }
