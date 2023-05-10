@@ -53,10 +53,9 @@ public class MainClient {
                         RequestUtils.newClientRegister(client.getClientName()); //Fica registado se o handshake foi um sucesso
                         RequestUtils.writeNumberToFile(0,RequestUtils.HANDSHAKE_SIGNAL); // Handshake was done, so it goes back to 0, so it's ready for antoher client
                         while (subAlive){
-
                             if(RequestUtils.getRequestCounter(client.getClientName()) == 5){ //Keeping up with the server
-
                                 System.out.println("\nYou have reached max requests. You will be taken to restart your session.");
+                                RequestUtils.resetRequestCounter(client.getClientName());
                                 clients.remove(client);
                                 client.endConnection();
                                 break;
@@ -77,7 +76,7 @@ public class MainClient {
                     }
                 case 2:
                     System.out.println("\nYou already have an account, you want to go back to that one.");
-                    System.out.println("\nWhat's yo name ? ");
+                    System.out.println("\nWhat's yo name bro ? ");
                     String c_name = in.next();
                     boolean clientFound = false;
                     Client ourClient = null;
@@ -98,6 +97,7 @@ public class MainClient {
 
                                 System.out.println("\nYou have reached max requests. You will be taken to restart your session.");
                                 clients.remove(ourClient);
+                                RequestUtils.resetRequestCounter(ourClient.getClientName());
                                 ourClient.endConnection();
                                 break;
                             }

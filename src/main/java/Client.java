@@ -48,11 +48,10 @@ public class Client {
 
         in = new ObjectInputStream ( client.getInputStream ( ) );
 
-        isConnected = true; // TODO: Check if this is necessary or if it should be controlled
+        isConnected = true; // Check if this is necessary or if it should be controlled - Not needed
 
         System.out.println("\nInsert your username");
         String name = scan.next();
-
 
         this.client_name = name;
 
@@ -60,8 +59,6 @@ public class Client {
 
         this.setPrivateKey();
         this.setPublicKey();
-
-
 
     }
 
@@ -153,7 +150,6 @@ public class Client {
         System.out.println("4. 2048 eggs & bacon");
         System.out.println("5. EFFICIENCY IS OVERRATED");
         int i = scan.nextInt();
-        System.out.println(i);
 
         System.out.println("\nEncryption/Decryption algoritm:");
         System.out.println("0. AES");
@@ -162,7 +158,6 @@ public class Client {
         System.out.println("3. 360-no-scope-DEES");
 
         int v = scan.nextInt();
-        System.out.println(v);
 
         switch (i){
             case 0:
@@ -268,8 +263,6 @@ public class Client {
                 break;
         }
 
-
-
         //HASHING
         byte[] computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
         if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {
@@ -357,7 +350,6 @@ public class Client {
             throw new RuntimeException ( e );
         }
     }
-
     /**
      *
      * @param publicKey Client's DH public key

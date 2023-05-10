@@ -118,10 +118,9 @@ public class ClientHandler extends Thread {
             }
 
             System.out.println("\nClient "+requestSplit.get(0) +" exceeded the max requests.");
-            RequestUtils.resetRequestCounter(requestSplit.get(0));
             System.out.println("Client "+requestSplit.get(0) +" request counter has been reset to 0.");
-
             System.out.println("Closing socket connection.");
+            sleep(400);     //O mainClient precisa de um pouco de mais tempo para ler os requests a 5, então antes de fazer o reset,
 
             closeConnection ( );
         } catch ( IOException | ClassNotFoundException e ) {
@@ -166,9 +165,6 @@ public class ClientHandler extends Thread {
         }
         System.out.println("\n");
     }
-
-
-
     /**
      * Sends the file to the client
      *

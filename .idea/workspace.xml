@@ -4,27 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="75ea87d5-b57d-45a4-9edf-2445a379a4bb" name="Changes" comment="Integrity test">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_9_3.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_9_3.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_9_3.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_9_3.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_9_3.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_9_3.xml" beforeDir="false" />
+    <list default="true" id="75ea87d5-b57d-45a4-9edf-2445a379a4bb" name="Changes" comment="javadoc">
+      <change afterPath="$PROJECT_DIR$/CCC/files/User_Buenas.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CCC/private/privateKey.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/RRRR/files/User_Buenas.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/RRRR/private/privateKey.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/RRRRR/private/privateKey.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Raa/files/User_Buenas.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Raa/private/privateKey.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Raaa/files/User_A.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Raaa/files/User_Buenas.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Raaa/private/privateKey.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sara/files/User_Buenas.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sara/private/privateKey.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server_G11/private/privateKey.key" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/My/private/privateKey.key" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sara/files/User_A.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/francisco/private/privateKey.key" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/ro/private/privateKey.key" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/rw/private/privateKey.key" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/Registry/registry.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/Registry/registry.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/DES.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DES.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/DES3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DES3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Hmac.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Hmac.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Message.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/RequestUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RequestUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/MainClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/MainClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/ClientHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/ClientHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/DES.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/DES.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/DES3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/DES3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Hmac.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Hmac.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/MainClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/MainClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Message.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Message.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/RequestUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/RequestUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Server.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/u1/private/privateKey.key" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -370,7 +380,14 @@
       <option name="project" value="LOCAL" />
       <updated>1683749164917</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="javadoc">
+      <created>1683753500931</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1683753500931</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -384,7 +401,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="dev-Felicidade" />
+                        <option value="origin/final" />
                       </list>
                     </value>
                   </entry>
@@ -398,7 +415,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="&lt;feat&gt; (MAC, Digest) :  Geração de chaves únicas, Criação de um HashMap para manter registo dos requests dos clientes" />
     <MESSAGE value="&lt;fix&gt; (RSA) : Correção do nome das chaves públicas" />
     <MESSAGE value="&lt;feat&gt; (RSA) : Armazenamento das chaves do servidor" />
     <MESSAGE value="&lt;feat&gt; (Server, Requests, Registry) : Adicionada uma maneira de saber qual o utilizador que fez o request e como manter registo do número de requests" />
@@ -423,6 +439,7 @@
     <MESSAGE value="add : Algoritmos de Hashing SHA-256, SHA-1 e MD5 adicionados" />
     <MESSAGE value="code cleanup + javadoc + bug fix" />
     <MESSAGE value="Integrity test" />
-    <option name="LAST_COMMIT_MESSAGE" value="Integrity test" />
+    <MESSAGE value="javadoc" />
+    <option name="LAST_COMMIT_MESSAGE" value="javadoc" />
   </component>
 </project>
