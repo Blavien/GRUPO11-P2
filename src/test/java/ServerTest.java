@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,7 @@ class ServerTest {
 
 
 
-
+@DisplayName("Get and set the a new server port")
     @Test
     void getSetPort() {
         serverThread.start();

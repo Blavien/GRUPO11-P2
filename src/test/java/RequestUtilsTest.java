@@ -34,14 +34,14 @@ public class RequestUtilsTest {
         assertEquals(expectedName, RequestUtils.getFileNameFromRequest(request));
     }
 @DisplayName("Tests if the splitRequest can extract the necessary information from request")
-    @Test
-    public void testSplitRequest() throws Exception {
-        String message = "CLIENT1: GET : test.txt";
-        ArrayList<String> expected = new ArrayList<>();
-        expected.add("CLIENT1");
-        expected.add("test.txt");
-        assertEquals(expected, RequestUtils.splitRequest(message));
-    }
+@Test
+public void testSplitRequest() throws Exception {
+    String message = "USERNAME: CLIENT1: GET : test.txt";
+    ArrayList<String> expected = new ArrayList<>();
+    expected.add("CLIENT1");
+    expected.add("test.txt");
+    assertEquals(expected, RequestUtils.splitRequest(message));
+}
 
     @Test
     @DisplayName("Tests if a certain file is being created properly")
