@@ -25,8 +25,6 @@ public class Server implements Runnable {
     private final boolean isConnected;
     private final PrivateKey privateRSAKey;
     private final PublicKey publicRSAKey;
-
-
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private int port;

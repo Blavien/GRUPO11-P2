@@ -17,23 +17,18 @@ import java.security.NoSuchAlgorithmException;
 class AESTest {
 
 
-    private AES Crypto;
-
-
-        private final byte[] secretKey = "secretkey012".getBytes(StandardCharsets.UTF_8);
-        private final byte[] message = "mmessage".getBytes(StandardCharsets.UTF_8);
-
-
         @Test
         @DisplayName("Test is the message is encrypted and descrypted")
         void testEncryptDecrypt() throws Exception {
+            byte[] secretKey = "secretkey012".getBytes();
+            byte[] message = "message".getBytes();
+            byte[] encrypted = AES.encrypt(message, secretKey);
+            byte[] desincrypted = AES.decrypt(encrypted,secretKey);
+            String decryptedString = new String(desincrypted);
+            String messageString = new String(message);
+                    assertNotEquals(message, encrypted);
+                    assertEquals(messageString,decryptedString);
 
-            byte[] encrypted = Crypto.encrypt(message, secretKey);
-            byte[] decrypted = Crypto.decrypt(encrypted, secretKey);
-            assertAll(
-                    () -> assertArrayEquals(message, decrypted),
-                    () -> assertNotEquals(message, encrypted)
-                    );
         }
 
 }

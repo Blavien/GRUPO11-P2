@@ -2,11 +2,8 @@ import javax.crypto.SecretKey;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -20,7 +17,7 @@ public class Client {
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
     private boolean isConnected;
-    private final String userDir;
+
     private String client_name;
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -28,11 +25,10 @@ public class Client {
     private int requestLimit;
     private String fileName;
     private PublicKey serverPublicRSAKey;
-    private KeyPair clientKeyPair;
     private static final Scanner scan = new Scanner(System.in);
     private BigInteger sharedSecret;
     private ArrayList<Integer> choice;       // get(0) - Hashing algorithm       get(1) - Encryption algorithm
-                                                                        //    0 - MAC    1 - Hash                   0 - AES   1 -
+    private static String DIGEST_ALGORITHM = "";
     /**
      * Constructs a Client object by specifying the port to connect to. The socket must be created before the sender can
      * send a message.
@@ -51,12 +47,6 @@ public class Client {
 
         isConnected = true; // TODO: Check if this is necessary or if it should be controlled
 
-        // Create a temporary directory for putting the request files
-
-        userDir = Files.createTempDirectory ( "fileServer" ).toFile ( ).getAbsolutePath ( );
-
-        System.out.println ( "Temporary directory path " + userDir );
-
         System.out.println("\nInsert your username");
         String name = scan.next();
         this.client_name = name;
@@ -65,8 +55,6 @@ public class Client {
 
         this.setPrivateKey();
         this.setPublicKey();
-
-
     }
     public String getClientName() {
         return client_name;
@@ -76,8 +64,6 @@ public class Client {
     }
     public void setPrivateKey() throws Exception{ this.privateKey = RSA.getPrivateKey(this.client_name); }
     public void setPublicKey() throws Exception{ this.publicKey = RSA.getPublicKey(this.client_name); }
-    public PrivateKey getPrivateKey() throws Exception{ return this.privateKey; }
-    public PublicKey getPublicKey() throws Exception{ return RSA.getPublicKey(this.client_name); }
     public void setFileName(String request){
         this.fileName = request;
     }
@@ -90,51 +76,86 @@ public class Client {
         this.isConnected = bool;
     }
 
-    public void doHandshake() throws Exception {
-        serverPublicRSAKey = rsaKeyDistribution();
-        sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
-        macKey=MAC.createMACKey();
+    public boolean doHandshake() throws Exception {
+        boolean handshakeInsuccess = false;
+        boolean invalid_choice_hashing = false;
+        boolean invalid_choice_encryption = false;
         choice = new ArrayList<Integer>(); //Array novo sempre que isto é chamado
 
-        System.out.println("\nWe will make you choose the security you want, cause I want 20.");
+        System.out.println("\nWe will make you set up your commmunication and security, cause I want 20.");
 
         // choice.get(0)
-        System.out.println("\nHashing algoritm:");
-        System.out.println("0. MAC");
-        System.out.println("1. Hash");
+        System.out.println("\nHashing algoritms:");
+        System.out.println("0. SHA-512");
+        System.out.println("1. SHA-256");
+        System.out.println("2. SHA-1");
+        System.out.println("3. MD5");
+        System.out.println("4. 2048 eggs & bacon");
+        System.out.println("5. EFFICIENCY IS OVERRATED");
         int i = scan.nextInt();
         switch (i){
             case 0:
-                System.out.println("choose mac");
+                DIGEST_ALGORITHM = "HmacSHA512";
                 choice.add(0); // [0] = 0
                 break;
             case 1:
-                System.out.println("choose hash");
+                DIGEST_ALGORITHM = "HmacSHA256";
                 choice.add(1); // [0] = 1
+                break;
+            case 2:
+                DIGEST_ALGORITHM = "HmacSHA1";
+                choice.add(2); // [0] = 2
+                break;
+            case 3:
+                DIGEST_ALGORITHM = "HmacMD5";
+                choice.add(3); // [0] = 3
+                break;
+            case 4:
+                invalid_choice_hashing = true;
+                break;
+            case 5:
+                invalid_choice_hashing = true;
                 break;
         }
         // choice.get(1)
-        System.out.println("\nEncryption/Decryption algoritm:");
+        System.out.println("\nEncryption/Decryption algoritms:");
         System.out.println("0. AES");
-        System.out.println("1. 3DES");
+        System.out.println("1. DES");
+        System.out.println("2. 3DES");
+        System.out.println("3. 360-no-scope-DES");
         i = scan.nextInt();
         switch (i){
             case 0:
-                System.out.println("choose AES");
                 choice.add(0); // [1] = 0
                 break;
             case 1:
-                System.out.println("choose 3DES");
                 choice.add(1); // [1] = 1
                 break;
-
+            case 2:
+                choice.add(2); // [1] = 2
+                break;
+            case 3:
+                invalid_choice_encryption = true;
+                break;
         }
-        System.out.println(choice);
-        sendClientChoice();
 
-        if(choice.get(0) == 0){
+        //Faz o handshake
+        if(invalid_choice_hashing == false && invalid_choice_encryption == false){
+            serverPublicRSAKey = rsaKeyDistribution();
+
+            sharedSecret = agreeOnSharedSecret ( serverPublicRSAKey );
+
+            this.macKey = Hmac.createMACKey(DIGEST_ALGORITHM);
+
+            sendClientChoice();
+
             sendMacKey();
+
+        }else{
+            handshakeInsuccess = true;
+            System.out.println("This server doesn't support those algorithms.");
         }
+        return handshakeInsuccess;
     }
     public void sendClientChoice() throws IOException {
         out.writeObject(choice);
@@ -153,73 +174,72 @@ public class Client {
         String unitedMessage = "";
 
         //BigInteger sharedSecret = agreeOnSharedSecret(serverPublicRSAKey);
-
         Message response = (Message) in.readObject();
         byte[] decryptedFile = null;
         //CRYPTO
         if(choice.get(1) == 0) {
             decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-        }else if(choice.get(1) == 1){
-            //decryptedFile = 3DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-
         }
+        if(choice.get(1) == 1){
+            decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+        }
+        if(choice.get(1) == 2){
+            decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
+        }
+
+
+
         //HASHING
-        byte[] computedDigest = null;
-        if(choice.get(0) == 0) {
-            computedDigest = MAC.generateMAC(decryptedFile, macKey);
-            if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
+        byte[] computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
+        if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {
                 throw new RuntimeException("The integrity of the message is not verified");
-            }
-        }else if(choice.get(0) == 1){
-            computedDigest = Hash.generateDigest(decryptedFile);
-            if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                throw new RuntimeException("The integrity of the message is not verified");
-            }
-        }
 
+        }
         String decryptedContent = new String(decryptedFile);  // To handle divided content
 
         if (decryptedContent.equals("INICIO")) { //Decrypts this first message - INICIO
 
-            //System.out.println("Recebeu o inicio");
-
             while (!decryptedContent.equals("FIM")){ //Decrypts the rest of the message until we get the last message - FIM
 
                 response = (Message) in.readObject();
-                //CRYPTO
+                //CRYPTO $$
                 if(choice.get(1) == 0) {
                     decryptedFile = AES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-                }else if(choice.get(1) == 1){
-                    //decryptedFile = 3DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
-
                 }
+                if(choice.get(1) == 1){
+                    decryptedFile = DES.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                }
+                if(choice.get(1) == 2){
+                    decryptedFile = DES3.decrypt(response.getMessage(), sharedSecret.toByteArray());
+                }
+
                 //HASHING
-                if(choice.get(0) == 0) {
-                    computedDigest = MAC.generateMAC(decryptedFile, macKey);
-                    if (!MAC.verifyMAC(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
-                }else if(choice.get(0) == 1){
-                    computedDigest = Hash.generateDigest(decryptedFile);
-                    if (!Hash.verifyDigest(response.getSignature(), computedDigest)) {
-                        throw new RuntimeException("The integrity of the message is not verified");
-                    }
+                computedDigest = Hmac.hmac(decryptedFile,DIGEST_ALGORITHM, macKey.getEncoded());
+                if (!Hmac.verifyDigest(response.getSignature(), computedDigest)) {
+                    throw new RuntimeException("The integrity of the message is not verified");
                 }
 
                 decryptedContent = new String(decryptedFile);
 
-                unitedMessage +=new String(decryptedFile);
+                if(!decryptedContent.equals("FIM")) {
+                    unitedMessage += new String(decryptedFile);
+                }
             }
             System.out.println("We have reached the end of the file content.");
 
             System.out.println("This is the file content:");
 
             System.out.println(new String (unitedMessage));
-
             saveFiles(unitedMessage);
 
         }else{
-            saveFiles(new String(decryptedFile));
+            if(!decryptedContent.equals("FIM")) {
+                System.out.println("\nThis is the file content:");
+
+                System.out.println(new String (decryptedFile));
+
+                saveFiles(new String(decryptedFile));
+            }
         }
     }
 
@@ -275,22 +295,22 @@ public class Client {
         byte[] encryptedMessage = null;
         if(choice.get(1) == 0){ //AES
             encryptedMessage = AES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
-        }else if(choice.get(1) == 1){ //3DES
-            //encryptedMessage = 3DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
         }
-        byte[] digest = null;
+        if(choice.get(1) == 1){ //DES
+            encryptedMessage = DES.encrypt ( message.getBytes ( ) , sharedSecret.toByteArray ( ) );
+        }
+        if(choice.get(1) == 2){
+            encryptedMessage = DES3.encrypt(message.getBytes(), sharedSecret.toByteArray());
+        }
 
-        if(choice.get(0) == 0){ //MAC
-            // Generates the MAC
-            digest = MAC.generateMAC(message.getBytes ( ),macKey);
-        }else if(choice.get(0) == 1){ //HASH
-            digest = Hash.generateDigest(message.getBytes ( ));
-        }
+        byte[] digest = Hmac.hmac(message.getBytes ( ), DIGEST_ALGORITHM,macKey.getEncoded());
+
         // Creates the message object
         Message messageObj = new Message ( encryptedMessage , digest );
         // Sends the encrypted message
         out.writeObject ( messageObj );
         out.flush();
+
     }
     private BigInteger agreeOnSharedSecret (PublicKey serverPublicRSAKey ) throws Exception {
         // Generates a private key
@@ -320,6 +340,15 @@ public class Client {
             // Waits for the response
             processResponse ( RequestUtils.getFileNameFromRequest ( request ) );
         }
+    }
+
+
+    public String getClient_name() {
+        return client_name;
+    }
+
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
     }
 
 
